@@ -8,3 +8,5 @@ run:
 
 clean:
 	rm -f *.{hi,o} .*.{swo,swp}
+
+.PHONY: clean run
