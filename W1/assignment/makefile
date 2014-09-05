@@ -1,12 +1,12 @@
 TARGET=Curves
 
 all:
-	ghc Curves.hs -o $(TARGET)
+	ghc $(TARGET).hs -o $(TARGET)
 
 run:
-	./Curves
+	./$(TARGET)
 
 clean:
 	rm -f $(TARGET) .*.*.{swp,swo} *.{o,hi}
 
-.PHONY: clean
+.PHONY: clean run
