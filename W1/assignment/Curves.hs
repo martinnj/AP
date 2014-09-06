@@ -56,3 +56,21 @@ rotate (Curve(cs)) d = Curve (map (rotate' d) cs)
 
 translate :: Curve -> Point -> Curve
 translate (Curve(cs)) p = Curve (map (+ p) cs)
+
+data Axis = Vertical | Horizontal
+
+--reflect :: Curve -> Axis -> Double -> Curve
+-- TODO: The function. Dashit is going on? :P
+
+--bbox :: Curve -> (Point, Point)
+-- TODO: Actual function, should be easy, linear search through all points,
+-- record lowest and highest x and y values.
+
+--width :: Curve -> Double
+-- TODO: Use bbox and take the distance between the x coords.
+
+--height :: Curve -> Double
+-- TODO: What do you think? ;)
+
+toList :: Curve -> [Point]
+toList (Curve cs) = cs
