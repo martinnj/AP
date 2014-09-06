@@ -58,6 +58,8 @@ tests = [
   ]
 
 
--- Do a folding function that collapses the list to a single boolean,
--- which should be true if all tests passes.
--- More detail might be needed though.
+-- Do a folding function that collapses the list to a single boolean, which
+-- should be true if all tests passes.
+
+-- More detail might be needed though. <--
+-- Disregard, QuickCheck is mandatory from week 2.
