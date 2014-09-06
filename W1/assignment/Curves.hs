@@ -1,8 +1,9 @@
-tests :: [Bool]
-tests = []
+--tests :: [Bool]
+--tests = []
+-- What where these?
 
 newtype Point = Point (Double, Double)
-    deriving (Show)
+  deriving (Show)
 
 -- test points
 p1 = Point(0,0)
@@ -14,20 +15,26 @@ p5 = Point(6,16)
 point :: (Double, Double) -> Point
 point (x, y) = Point(x, y)
 
--- TODO: make Point instance of something that allows addition (p1 + p2)
-addPoints :: Point -> Point -> Point
-addPoints (Point(ax,ay)) (Point(bx, by)) = Point(ax+bx,ay+by)
-
 instance Eq Point where
-    Point(ax, ay) == Point(bx, by) = (abs(ax-bx) < 0.01) &&
-                                     (abs(ay-by) < 0.01)
+  Point(ax, ay) == Point(bx, by) = (abs(ax-bx) < 0.01) &&
+                                   (abs(ay-by) < 0.01)
+
+instance Num (Point) where
+  Point(ax, ay) + Point(bx, by) = Point(ax+bx, ay+by)
+  Point(ax, ay) * Point(bx, by) = Point(ax*bx, ay*by) -- Does not make sense,
+                                                      -- but needed for
+                                                      -- overload.
+  Point(ax, ay) - Point(bx, by) = Point(ax-bx, ay-by)
+  abs(Point(x, y)) = Point(abs(x), abs(y))
+  signum (Point (x,y)) = Point (signum x, signum y)
+  fromInteger i = Point (fromInteger i, fromInteger i)
 
 -- assertion tests
 -- (point(0,0) == point(0.009,0.009))
 -- (point(0,0) /= point(0.01,0.01))
 
 newtype Curve = Curve [Point]
-    deriving (Show)
+  deriving (Show)
 
 -- test curves
 c1 = curve p1 [p2,p3]
@@ -39,14 +46,13 @@ curve p ps = Curve (p : ps)
 connect :: Curve -> Curve -> Curve
 connect (Curve(xs)) (Curve(ys)) = Curve(xs ++ ys)
 
--- this can probably by prettier :/
-rotate' :: Double -> Point -> Point
-rotate' d (Point(x,y)) = Point(x * cos r - y * sin r, x * sin r + y * cos r)
-    where r = (d * pi/180)
-
+-- Pretty as can be :D
 rotate :: Curve -> Double -> Curve
 rotate (Curve(cs)) d = Curve (map (rotate' d) cs)
+  where rotate' :: Double -> Point -> Point
+        rotate' d (Point(x,y)) = Point(x * cos r - y * sin r,
+                                       x * sin r + y * cos r)
+          where r = (d * pi/180)
 
 translate :: Curve -> Point -> Curve
-translate (Curve(cs)) p = Curve (map (addPoints p) cs) -- TODO: make (+ p)
-
+translate (Curve(cs)) p = Curve (map (+ p) cs)
