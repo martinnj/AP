@@ -22,7 +22,7 @@ instance Num (Point) where
   fromInteger i = Point (fromInteger i, fromInteger i)
 
 newtype Curve = Curve [Point]
-  deriving (Show)
+  deriving (Show, Eq)
 
 curve :: Point -> [Point] -> Curve
 curve p ps = Curve (p : ps)
@@ -47,7 +47,7 @@ reflect :: Curve -> Axis -> Double -> Curve
 reflect (Curve(ps)) a d = Curve(map (flip' a d) ps)
   where
     flip' :: Axis -> Double -> Point -> Point
-    flip' Horizontal d (Point(x,y)) = Point(x     , y*(-1)+(2*d))
+    flip' Horizontal d (Point(x,y)) = Point(x           , y*(-1)+(2*d))
     flip' Vertical   d (Point(x,y)) = Point(x*(-1)+(2*d), y)
 
 --bbox :: Curve -> (Point, Point)
