@@ -1,3 +1,4 @@
+--import Test.QuickCheck -- srsly, fuck quickcheck :P
 import Curves
 
 -- test points
@@ -17,6 +18,7 @@ c5 = Curve [Point(1,-1), Point(2,1), Point(3,3)]
 c6 = Curve [p1, Point(1,-2), Point(2,-4)]
 c7 = Curve [Point(0,2), Point(1,0), Point(2,-2)]
 c8 = Curve [p1, Point(-1,2), Point(-2,4)]
+
 
 -- All tests below should return true.
 tests :: [Bool]
