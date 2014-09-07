@@ -1,0 +1,88 @@
+\documentclass[11pt]{article}
+
+\usepackage{a4wide}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+\usepackage{float}
+\usepackage[utf8]{inputenc}
+\usepackage{multicol}
+\usepackage{listings}
+
+\newcommand{\code}[1]{{\tt #1}}
+\newcommand{\file}[1]{{\tt #1}}
+
+\newcommand{\figref}[1]{(see figure~\ref{#1})}
+
+% usage: \codefig{label}{file}{firstline}{lastline}{description}
+\newcommand{\codefig}[5]
+{
+\begin{figure}[H]
+    \lstinputlisting[firstnumber=#3,firstline=#3,lastline=#4]{#2}
+    \caption{#5 (#2)}
+    \label{code:#1}
+\end{figure}
+}
+
+\definecolor{comment}{rgb}      {0.38, 0.62, 0.38}
+\definecolor{keyword}{rgb}      {0.10, 0.10, 0.81}
+\definecolor{identifier}{rgb}   {0.00, 0.00, 0.00}
+\definecolor{string}{rgb}       {0.50, 0.50, 0.50}
+
+\lstset
+{
+    language=haskell,
+    % general settings
+    numbers=left,
+    frame=single,
+    basicstyle=\footnotesize\ttfamily,
+    tabsize=2,
+    breaklines=true,
+    showstringspaces=false,
+    % syntax highlighting
+    commentstyle=\color{comment},
+    keywordstyle=\color{keyword},
+    identifierstyle=\color{identifier},
+    stringstyle=\color{string},
+}
+
+
+\title
+{
+    {\Large Weekly Assignment 1} \\
+    Advanced Programming
+}
+
+\author
+{
+    Martin Jørgensen \\
+    University of Copenhagen \\
+    Department of Computer Science \\
+    {\tt abc123@alumni.ku.dk}
+    \and
+    Casper B. Hansen \\
+    University of Copenhagen \\
+    Department of Computer Science \\
+    {\tt fvx507@alumni.ku.dk}
+}
+
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\begin{multicols}{2}
+    \begin{abstract}
+        ...
+    \end{abstract}
+\vfill\columnbreak
+\tableofcontents
+\end{multicols}
+
+\clearpage
+
+
+\section{...}
+
+\end{document}
