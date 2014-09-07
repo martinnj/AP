@@ -14,6 +14,10 @@ instance Eq Point where
   Point(ax, ay) == Point(bx, by) = (abs(ax-bx) < 0.01) &&
                                    (abs(ay-by) < 0.01)
 
+-- Used for bounding box
+instance Ord Point where
+  Point(ax, ay) <= Point(bx, by) = (ax <= bx) && (ay <= by)
+
 -- Instancing Point under Num to use the + and - operators.
 -- */abs/signum is nonsensical but included to shut up the compiler ^_^
 instance Num (Point) where
@@ -61,9 +65,10 @@ reflect (Curve(ps)) a o = Curve(map (flip' a o) ps)
     flip' Horizontal o (Point(x,y)) = Point(x           , y*(-1)+(2*o))
     flip' Vertical   o (Point(x,y)) = Point(x*(-1)+(2*o), y)
 
---bbox :: Curve -> (Point, Point)
--- TODO: Actual function, should be easy, linear search through all points,
--- record lowest and highest x and y values.
+-- Calculate bounding box
+bbox :: Curve -> (Point, Point)
+bbox (Curve(p:ps)) = (foldl (cmp min) p (p:ps), foldl (cmp max) p (p:ps))
+    where cmp f = \(Point(ax,ay)) (Point(bx,by)) -> Point(f ax bx, f ay by)
 
 --width :: Curve -> Double
 -- TODO: Use bbox and take the distance between the x coords.
