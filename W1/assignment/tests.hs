@@ -10,6 +10,11 @@ p2 = Point(1,2)
 p3 = Point(2,4)
 p4 = Point(4,8)
 p5 = Point(6,16)
+p6 = Point(0,0)
+p7 = Point(100,0)
+p8 = Point(50, 100)
+p9 = Point(50, 200)
+
 
 
 -- test curves
@@ -23,7 +28,7 @@ c7 = Curve [Point(0,2), Point(1,0), Point(2,-2)]
 c8 = Curve [p1, Point(-1,2), Point(-2,4)]
 c9 = Curve [Point(0,0), Point(2,-1), Point(4,-2)]
 c10 = Curve [Point(-100,-100),Point(100,-100),Point(100,100),Point(-100,100),Point(-100,-100)]
-
+c11 = Curve [p6,p7,p8,p6,p9,p7]
 
 -- All tests below should return true.
 tests :: [Bool]

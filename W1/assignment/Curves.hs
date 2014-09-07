@@ -1,5 +1,7 @@
 module Curves where
 
+import Text.Printf (printf)
+
 -- PART 1 LIBRARY
 newtype Point = Point (Double, Double)
   deriving (Show)
@@ -14,9 +16,6 @@ instance Eq Point where
   Point(ax, ay) == Point(bx, by) = (abs(ax-bx) < 0.01) &&
                                    (abs(ay-by) < 0.01)
 
--- Used for bounding box
-instance Ord Point where
-  Point(ax, ay) <= Point(bx, by) = (ax <= bx) && (ay <= by)
 
 -- Instancing Point under Num to use the + and - operators.
 -- */abs/signum is nonsensical but included to shut up the compiler ^_^
@@ -61,13 +60,6 @@ data Axis = Vertical | Horizontal
 reflect :: Curve -> Axis -> Double -> Curve
 reflect (Curve(ps)) Vertical o = Curve (map (\(Point(x,y)) -> Point(-x+2*o, y)) ps)
 reflect (Curve(ps)) Horizontal o   = Curve (map (\(Point(x,y)) -> Point(x, -y+2*o)) ps)
--- reflect c Horizontal o = translate (map (\(Point(x,y)) -> Point(-x,y)) (translate c (Point(-o,0)))) (Point(o,0))
-
---reflect (Curve(ps)) a o = Curve(map (flip' a o) ps)
---  where
---    flip' :: Axis -> Double -> Point -> Point
---    flip' Horizontal o (Point(x,y)) = Point(x           , y*(-1)+(2*o))
---    flip' Vertical   o (Point(x,y)) = Point(x*(-1)+(2*o), y)
 
 -- Calculate bounding box
 bbox :: Curve -> (Point, Point)
@@ -77,7 +69,7 @@ bbox (Curve(p:ps)) = (foldl (cmp min) p (p:ps), foldl (cmp max) p (p:ps))
 -- Get the width of the bounding box.
 width :: Curve -> Double
 width c = xmax - xmin
-	where (Point(xmin,_), Point(xmax,_)) = bbox(c)
+  where (Point(xmin,_), Point(xmax,_)) = bbox(c)
 
 -- Get the height of the bounding box.
 height :: Curve -> Double
@@ -92,43 +84,48 @@ toList (Curve ps) = ps
 -- PART 2 GENERATE SVG
 -- Converts a curve to it's SVG-XML representation.
 toSVG :: Curve -> String
-toSVG c = 
+toSVG c =
     let (Point(xmin,ymin),Point(xmax,ymax)) = bbox c
-        
+
+        pp = printf "%.2f"
+
         coordConvert :: Point
-        coordConvert = Point(
-                        (if xmin < 0 then abs xmin else xmin),
-                        (if ymin < 0 then abs ymin else ymin)
-                        )
-        
-        screenCurve = (translate c coordConvert)
-        
+        coordConvert = Point(abs xmin,abs ymin)
+
+
         (Point(xmin',ymin'),Point(xmax',ymax')) = bbox screenCurve
-        
+
+        screenCurve = (translate c coordConvert)
+        imgWidth = max (ceiling ((width screenCurve) + xmin')) 2
+        imgHeight = max (ceiling ((height screenCurve) + ymin')) 2
+        --imgWidth  = (ceiling $ max ((width screenCurve) + xmin') 2)
+        --imgHeight = (ceiling $ max ((height screenCurve) + ymin') 2)
+
+
         head = "<svg xmlns=\"http://www.w3.org/2000/svg\" " ++
                "width=\"" ++
-               (show (ceiling $ (max ((width c) + xmin') 2))) ++
+               (show imgWidth) ++
                "\" " ++
                "height=\"" ++
-               (show (ceiling $ (max ((height c) + ymin') 2))) ++
+               (show imgHeight) ++
                "\" " ++
                "version=\"1.1\">\n<g>\n" ++
                "<!-- x-min'=" ++ show xmin' ++ " -->\n" ++
                "<!-- y-min'=" ++ show ymin' ++ " -->\n" ++
                "<!-- x-max'=" ++ show xmax' ++ " -->\n" ++
                "<!-- y-max'=" ++ show ymax' ++ " -->\n"
-        
+
         foot = "</g>\n</svg>"
-        
+
         line :: Curve -> String
         line (Curve([]))        = ""
         line (Curve(_:[]))      = ""
         line (Curve(Point(x1,y1):Point(x2,y2):rest)) =
             "<line style=\"stroke-width:2px; stroke:black; fill:white\" " ++
-            "x1=\"" ++ show x1 ++ "\" " ++
-            "y1=\"" ++ show ((height c) - y1) ++ "\" " ++
-            "x2=\"" ++ show x2 ++ "\" " ++
-            "y2=\"" ++ show ((height c) - y2) ++ "\" " ++
+            "x1=\"" ++ pp x1 ++ "\" " ++
+            "y1=\"" ++ pp (imgHeight - y1) ++ "\" " ++
+            "x2=\"" ++ pp x2 ++ "\" " ++
+            "y2=\"" ++ pp (imgHeight - y2) ++ "\" " ++
             "/>\n" ++
             line (Curve(Point(x2,y2):rest))
 
