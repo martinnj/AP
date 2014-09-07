@@ -46,9 +46,11 @@ connect (Curve(xs)) (Curve(ys)) = Curve(xs ++ ys)
 rotate :: Curve -> Double -> Curve
 rotate (Curve(cs)) d = Curve (map (rotate' d) cs)
   where rotate' :: Double -> Point -> Point
-        rotate' d (Point(x,y)) = Point(x * cos r - y * sin r,
-                                       x * sin r + y * cos r)
+        rotate' d (Point(x,y)) = Point(x * cosr - y * sinr,
+                                       x * sinr + y * cosr)
           where r = (d * pi/180)
+            cosr = cos r
+            sinr = sin r
 
 -- Translate a Curve around the plane.
 translate :: Curve -> Point -> Curve
@@ -68,7 +70,7 @@ reflect (Curve(ps)) a o = Curve(map (flip' a o) ps)
 -- Calculate bounding box
 bbox :: Curve -> (Point, Point)
 bbox (Curve(p:ps)) = (foldl (cmp min) p (p:ps), foldl (cmp max) p (p:ps))
-    where cmp f = \(Point(ax,ay)) (Point(bx,by)) -> Point(f ax bx, f ay by)
+  where cmp f = \(Point(ax,ay)) (Point(bx,by)) -> Point(f ax bx, f ay by)
 
 -- Get the width of the bounding box.
 width :: Curve -> Double
@@ -78,7 +80,7 @@ width c = xmax - xmin
 -- Get the height of the bounding box.
 height :: Curve -> Double
 height c = ymax - ymin
-    where (Point(_,ymin), Point(_,ymax)) = bbox(c)
+  where (Point(_,ymin), Point(_,ymax)) = bbox(c)
 
 -- Returns the list of points contained in a Curve.
 toList :: Curve -> [Point]
