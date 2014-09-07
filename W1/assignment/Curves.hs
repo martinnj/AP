@@ -78,7 +78,7 @@ width c = xmax - xmin
 -- Get the height of the bounding box.
 height :: Curve -> Double
 height c = ymax - ymin
-    where (Point(_,ymax), Point(_,ymin)) = bbox(c)
+    where (Point(_,ymin), Point(_,ymax)) = bbox(c)
 
 
 -- Returns the list of points contained in a Curve.
