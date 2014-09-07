@@ -1,5 +1,8 @@
 module Curves where
 
+-- Written by Martin Jørgensen, tk173
+-- and Casper B. Hansen, fvx507
+
 import Text.Printf (printf)
 
 -- PART 1 LIBRARY

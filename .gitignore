@@ -1,0 +1,6 @@
+# LaTeX shit.
+.aux
+.fdb_latexmk
+.fls
+.log
+.out

@@ -1,6 +1,10 @@
 --import Test.QuickCheck -- srsly, fuck quickcheck :P
 import Curves
 
+
+-- Written by Martin Jørgensen, tk173
+-- and Casper B. Hansen, fvx507
+
 test :: [Bool] -> Bool
 test ts = foldl (&&) True ts
 

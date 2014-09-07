@@ -1,1 +1,24 @@
 \section{Generate SVG}
+The \texttt{toSVG} function takes a Curve type and generates a string containing
+the SVG data.  The \texttt{toFile} function takes a Curve object and and string
+with a filename and writes the string returned from \texttt{toSVG} to the file.
+
+In \texttt{toSVG} we first try and convert the Curve into screen coordinates,
+where the origin is in the top left of the positive quadrant and not lower left
+as in a Kartesian coordinate system.
+
+We generate the header of the SVG using a constant string where the height and
+width are calculated by taking the height/width of the curve and then adding
+offsets. The lines are created by taking the image height and subtracting the
+screen coordinates, to make up for the fact that the y-axis grows downwards in
+the screen cooridnate system, and not upwards.
+
+The following imags have been generated from our test Curves using
+\texttt{toSVG}.
+
+\graphicc{0.3}{img/test0.png}{Two triangles drawn over one another.}{fig:test0}
+\graphicc{0.3}{img/test1.png}{The letter ``M''.}{fig:test1}
+\graphicc{0.3}{img/test2.png}{A square, translated slightly left, to test if the
+  whitespace would stay.}{fig:test2} \graphicc{0.3}{img/test3.png}{The Figure
+  \ref{fig:test0} and Figure \ref{fig:test1} connected using the
+  \texttt{Curves->connect} function we implemented.}{fig:test3}
