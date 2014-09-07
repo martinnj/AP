@@ -70,11 +70,16 @@ bbox :: Curve -> (Point, Point)
 bbox (Curve(p:ps)) = (foldl (cmp min) p (p:ps), foldl (cmp max) p (p:ps))
     where cmp f = \(Point(ax,ay)) (Point(bx,by)) -> Point(f ax bx, f ay by)
 
---width :: Curve -> Double
--- TODO: Use bbox and take the distance between the x coords.
+-- Get the width of the bounding box.
+width :: Curve -> Double
+width c = xmax - xmin
+	where (Point(xmin,_), Point(xmax,_)) = bbox(c)
 
---height :: Curve -> Double
--- TODO: What do you think? ;)
+-- Get the height of the bounding box.
+height :: Curve -> Double
+height c = ymax - ymin
+    where (Point(_,ymax), Point(_,ymin)) = bbox(c)
+
 
 -- Returns the list of points contained in a Curve.
 toList :: Curve -> [Point]
