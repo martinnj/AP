@@ -82,8 +82,56 @@ Also, the formula above rotates counter-clockwise, and we'd like ours to
 rotate clockwise. So, we must make sure to negate the angle argument.
 
 \subsubsection{Translating Curves}
-..
+To translate the curve, we must first calculate the difference between the
+given argument point and the curve starting-point. This delta-point is then
+used for an additive {\tt map} over the entire sequence of points in the
+curve.
 
 \codefig{translate}{../Curves.hs}{52}{54}
 {Excerpt showing the {\tt translate} function}
+
+
+\subsubsection{Reflecting Curves}
+To reflect a curve we pattern-match on the {\tt Axis} argument, and then map
+each point in the curve by substracting the opposite component from twice the
+given offset. This is shown in figure \ref{code:reflect} below.
+
+\codefig{reflect}{../Curves.hs}{60}{62}
+{Excerpt showing the {\tt reflect} function}
+
+
+\subsubsection{Curve Bounding Box}
+In calculating the we made a local partial function ({\tt cmp}) used to fold
+the points of the curve on each composant by the {\tt min} function for the
+lower-left point and by the {\tt max} function for the upper-right point.
+
+\codefig{bbox}{../Curves.hs}{65}{67}
+{Excerpt showing the {\tt bbox} function}
+
+
+\subsubsection{Curve Width \& Height}
+Calculating the width was done by retrieving $x_min$ and $x_max$ from the
+bounding box, and returning the difference. That is, $x_max - x_min$, as shown
+in figure \ref{code:width} below. The same is done in calculating the height
+of the curve, so figure \ref{code:height} should be pretty self-explanatory.
+
+\begin{multicols}{2}
+
+    \codefig{width}{../Curves.hs}{70}{72}
+    {Excerpt showing the {\tt width} function}
+
+    \columnbreak
+
+    \codefig{height}{../Curves.hs}{75}{77}
+    {Excerpt showing the {\tt height} function}
+
+\end{multicols}
+
+\subsubsection{Making Lists From Curves}
+This is done entirely by pattern-matching. As apparent of figure
+\ref{code:toList} we simply grab the list contained within the {\tt Curve}
+type.
+
+\codefig{toList}{../Curves.hs}{80}{81}
+{Excerpt showing the {\tt toList} function}
 
