@@ -48,9 +48,19 @@ tests = [
   (reflect c1 Horizontal 1) == c7,
   (reflect c1 Vertical 0) == c8,
 
-  -- TODO: Testing bbox
-  -- TODO: Testing width
-  -- TODO: Testing height
+  -- Testing bbox
+  (bbox c5) == (Point(1,-1), Point(3,3)),
+  (bbox c8) == (Point(-2,0), Point(0,4)),
+
+  -- Testing width
+  (width c1) == 2.0,
+  (width c3) == 6.0,
+  (width c8) == 2.0,
+
+  -- Testing height
+  (height c1) == 4.0,
+  (height c3) == 16.0,
+  (height c8) == 4.0,
 
   -- Testing toList
   (toList c1) == [p1, p2, p3],
