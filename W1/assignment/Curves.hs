@@ -46,10 +46,6 @@ rotate (Curve(cs)) d = Curve (map (rotate' d) cs)
         rotate' d (Point(x,y)) = Point(x * cosr - y * sinr,
                                        x * sinr + y * cosr)
           where (r, cosr, sinr) = ((360 - d) * pi/180, cos r, sin r)
---rotate (Curve(c)) d = Curve(map (\(Point(x,y)) -> Point(y*sinr-x*cosr,-x*sinr-y*cosr)) c)
---  where r = d * pi / 180
---        sinr = sin r
---        cosr = cos r
 
 
 -- Translate a Curve around the plane.
