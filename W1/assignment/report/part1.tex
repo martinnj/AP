@@ -1,1 +1,89 @@
 \section{Curves.hs}
+
+\subsection{The Point}
+We've declared the {\tt Point} type using {\tt newtype}, as shown below in
+figure \ref{code:point-declaration}. It inherits the type class {\tt Show},
+which enables us to print it to the console.
+
+\codefig{point-declaration}{../Curves.hs}{6}{7}{{\tt Point} declaration}
+
+For ease of constructing points a constructor was defined as shown in figure
+\ref{code:point-constructor}, shown below.
+
+\codefig{point-constructor}{../Curves.hs}{10}{11}{{\tt Point} constructor}
+
+Due to the imprecision of floating-point numbers we've limited the amount of
+meaningful decimal places to two. This was done by instancing the {\tt Eq}
+type class for our {\tt Point} type to reflect this, and is shown in figure
+\ref{code:point-eq} below.
+
+\codefig{point-eq}{../Curves.hs}{15}{17}{Instantiating {\tt Eq} for
+{\tt Point}}
+
+Furthermore, as will be discussed later, we will need the {\tt Point} type to
+adhere to arithmetic operations. As such, we must make it apart of the {\tt
+Num} type class. This is shown in figure \ref{code:point-num}.
+
+\codefig{point-num}{../Curves.hs}{22}{28}{Instantiating {\tt Num} for
+{\tt Point}}
+
+% TODO: tests!
+
+
+\subsection{The Curve}
+We'd like to represent a curve in our program, which is essentially a sequence
+of points. So, we declared the {\tt Curve} type as a list of {\tt Point}s.
+This is shown in figure \ref{code:curve-declaration} below.
+
+\codefig{curve-declaration}{../Curves.hs}{31}{32}{Declaration of {\tt Curve}}
+
+For curves, we also have a convenience constructor function, shown below in
+figure \ref{code:curve-constructor}.
+
+\codefig{curve-constructor}{../Curves.hs}{35}{36}{{\tt Curve} constructor}
+
+% TODO: tests
+
+
+\newpage
+\subsection{Manipulation Functions}
+Now, we turn to describe the ways in which we can manipulate these curves.
+
+\subsubsection{Connecting Curves}
+Connecting curves $a = <a_1,\dots,a_n>$ and $b = <b_1,\dots,b_m>$, we simply
+append $b$ onto $a$ forming the new curve $c$, such that $c =
+<a_1,\dots,a_n,b_1,\dots,b_m>$. Our implemenation of this is shown in figure
+\ref{code:connect} below.
+
+\codefig{connect}{../Curves.hs}{39}{40}
+{Excerpt showing the {\tt connect} function}
+
+\subsubsection{Rotating Curves}
+Rotation about the origin is given in 2 dimensions by the rotation matrix;
+\begin{align}
+    R_\theta &=
+    \begin{bmatrix}
+        \cos \theta & -\sin \theta \\
+        \sin \theta & \cos \theta
+    \end{bmatrix}
+\end{align}
+
+Our implementation maps each point in the curve to a new curve by using a
+local function ({\tt rotate'}) that calculates the rotation of a single point,
+also taking care not to recalculate anything unnecessary.
+
+\codefig{rotate}{../Curves.hs}{43}{48}
+{Excerpt showing the {\tt rotate} function}
+
+Since we are required to give the angle in degrees, but the trigonometric
+functions of Haskell take their arguments in radians, we must make sure to
+convert these properly beforehand. This conversion is apparent on line 48.
+Also, the formula above rotates counter-clockwise, and we'd like ours to
+rotate clockwise. So, we must make sure to negate the angle argument.
+
+\subsubsection{Translating Curves}
+..
+
+\codefig{translate}{../Curves.hs}{52}{54}
+{Excerpt showing the {\tt translate} function}
+
