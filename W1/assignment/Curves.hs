@@ -46,10 +46,16 @@ rotate (Curve(cs)) d = Curve (map (rotate' d) cs)
         rotate' d (Point(x,y)) = Point(x * cosr - y * sinr,
                                        x * sinr + y * cosr)
           where (r, cosr, sinr) = ((360 - d) * pi/180, cos r, sin r)
+--rotate (Curve(c)) d = Curve(map (\(Point(x,y)) -> Point(y*sinr-x*cosr,-x*sinr-y*cosr)) c)
+--  where r = d * pi / 180
+--        sinr = sin r
+--        cosr = cos r
+
 
 -- Translate a Curve around the plane.
 translate :: Curve -> Point -> Curve
-translate (Curve(cs)) p = Curve (map (+ p) cs)
+translate (Curve(p:ps)) p1 = Curve (map (+ p') (p:ps))
+  where p' = p1 - p
 
 -- Axis enumerations.
 data Axis = Vertical | Horizontal
@@ -96,8 +102,6 @@ toSVG c =
         screenCurve = (translate c coordConvert)
         imgWidth = max ((width screenCurve) + xmin') 2
         imgHeight = max ((height screenCurve) + ymin') 2
-        --imgWidth  = (ceiling $ max ((width screenCurve) + xmin') 2)
-        --imgHeight = (ceiling $ max ((height screenCurve) + ymin') 2)
 
 
         head = "<svg xmlns=\"http://www.w3.org/2000/svg\" " ++
