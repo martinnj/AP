@@ -21,9 +21,7 @@ instance Eq Point where
 -- */abs/signum is nonsensical but included to shut up the compiler ^_^
 instance Num (Point) where
   Point(ax, ay) + Point(bx, by) = Point(ax+bx, ay+by)
-  Point(ax, ay) * Point(bx, by) = Point(ax*bx, ay*by) -- Does not make sense,
-                                                      -- but needed for
-                                                      -- overload.
+  Point(ax, ay) * Point(bx, by) = Point(ax*bx, ay*by) -- <3 Compiler warnings
   Point(ax, ay) - Point(bx, by) = Point(ax-bx, ay-by)
   abs(Point(x, y)) = Point(abs(x), abs(y))
   signum (Point (x,y)) = Point (signum x, signum y)
@@ -96,8 +94,8 @@ toSVG c =
         (Point(xmin',ymin'),Point(xmax',ymax')) = bbox screenCurve
 
         screenCurve = (translate c coordConvert)
-        imgWidth = max (ceiling ((width screenCurve) + xmin')) 2
-        imgHeight = max (ceiling ((height screenCurve) + ymin')) 2
+        imgWidth = max ((width screenCurve) + xmin') 2
+        imgHeight = max ((height screenCurve) + ymin') 2
         --imgWidth  = (ceiling $ max ((width screenCurve) + xmin') 2)
         --imgHeight = (ceiling $ max ((height screenCurve) + ymin') 2)
 
