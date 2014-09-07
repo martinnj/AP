@@ -45,7 +45,7 @@ rotate (Curve(cs)) d = Curve (map (rotate' d) cs)
   where rotate' :: Double -> Point -> Point
         rotate' d (Point(x,y)) = Point(x * cosr - y * sinr,
                                        x * sinr + y * cosr)
-          where (r, cosr, sinr) = ((360 - d) * pi/180, cos r, sin r)
+          where (r, cosr, sinr) = ((-d) * pi/180, cos r, sin r)
 
 
 -- Translate a Curve around the plane.
@@ -87,26 +87,22 @@ toSVG :: Curve -> String
 toSVG c =
     let (Point(xmin,ymin),Point(xmax,ymax)) = bbox c
 
-        pp = printf "%.2f"
+        pf = printf "%.2f"
 
         coordConvert :: Point
         coordConvert = Point(abs xmin,abs ymin)
 
+        screenCurve = (translate c coordConvert)
 
         (Point(xmin',ymin'),Point(xmax',ymax')) = bbox screenCurve
 
-        screenCurve = (translate c coordConvert)
-        imgWidth = max ((width screenCurve) + xmin') 2
-        imgHeight = max ((height screenCurve) + ymin') 2
+        imgWidth = max ((width screenCurve) + abs(xmin')) 2
+        imgHeight = max ((height screenCurve) + abs(ymin')) 2
 
 
         head = "<svg xmlns=\"http://www.w3.org/2000/svg\" " ++
-               "width=\"" ++
-               (show imgWidth) ++
-               "\" " ++
-               "height=\"" ++
-               (show imgHeight) ++
-               "\" " ++
+               "width=\"" ++ (show imgWidth) ++ "\" " ++
+               "height=\"" ++(show imgHeight) ++ "\" " ++
                "version=\"1.1\">\n<g>\n" ++
                "<!-- x-min'=" ++ show xmin' ++ " -->\n" ++
                "<!-- y-min'=" ++ show ymin' ++ " -->\n" ++
@@ -120,10 +116,10 @@ toSVG c =
         line (Curve(_:[]))      = ""
         line (Curve(Point(x1,y1):Point(x2,y2):rest)) =
             "<line style=\"stroke-width:2px; stroke:black; fill:white\" " ++
-            "x1=\"" ++ pp x1 ++ "\" " ++
-            "y1=\"" ++ pp (imgHeight - y1) ++ "\" " ++
-            "x2=\"" ++ pp x2 ++ "\" " ++
-            "y2=\"" ++ pp (imgHeight - y2) ++ "\" " ++
+            "x1=\"" ++ pf x1 ++ "\" " ++
+            "y1=\"" ++ pf (imgHeight - y1) ++ "\" " ++
+            "x2=\"" ++ pf x2 ++ "\" " ++
+            "y2=\"" ++ pf (imgHeight - y2) ++ "\" " ++
             "/>\n" ++
             line (Curve(Point(x2,y2):rest))
 
