@@ -1,6 +1,9 @@
 --import Test.QuickCheck -- srsly, fuck quickcheck :P
 import Curves
 
+test :: [Bool] -> Bool
+test ts = foldl (&&) True ts
+
 -- test points
 p1 = Point(0,0)
 p2 = Point(1,2)
@@ -18,6 +21,8 @@ c5 = Curve [Point(1,-1), Point(2,1), Point(3,3)]
 c6 = Curve [p1, Point(1,-2), Point(2,-4)]
 c7 = Curve [Point(0,2), Point(1,0), Point(2,-2)]
 c8 = Curve [p1, Point(-1,2), Point(-2,4)]
+c9 = Curve [Point(0,0), Point(2,-1), Point(4,-2)]
+c10 = Curve [Point(-100,-100),Point(100,-100),Point(100,100),Point(-100,100),Point(-100,-100)]
 
 
 -- All tests below should return true.
@@ -38,6 +43,7 @@ tests = [
   (connect c1 c2) == c3,
 
   -- TODO: Testing rotate
+  (rotate c1 90) == c9,
 
   -- Testing translate
   (translate c1 (Point(1,1))) == c4,
