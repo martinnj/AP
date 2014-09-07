@@ -1,0 +1,44 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\usepackage[T1]{fontenc}
+\linespread{1.2}
+\usepackage{amsmath,amssymb,amsthm,amsfonts,ulem}
+\usepackage{courier, fourier}
+\usepackage{clrscode3e}
+\usepackage{mdwlist}
+\setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{3}
+\usepackage{todonotes}
+\usepackage{hyperref}
+
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{mdwlist}
+\usepackage{wrapfig}
+\usepackage{caption}
+\newcommand{\graphicc}[4]{\begin{figure}[H] \centering
+            \includegraphics[width={#1\textwidth}, keepaspectratio=true]{{#2}}
+            \caption{{#3}} \label{#4} \end{figure}}
+
+\title{Advanced Programming 2014 @ DIKU}
+\author{Martin Jørgensen, tzk173\\
+        Casper B. Hansen, xxxyyy}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\pagebreak
+
+\input{part1}
+\input{part2}
+\input{part3}
+\input{part4}
+\input{part5}
+
+
+
+\end{document}
