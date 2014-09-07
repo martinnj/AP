@@ -80,7 +80,6 @@ height :: Curve -> Double
 height c = ymax - ymin
     where (Point(_,ymin), Point(_,ymax)) = bbox(c)
 
-
 -- Returns the list of points contained in a Curve.
 toList :: Curve -> [Point]
 toList (Curve ps) = ps
