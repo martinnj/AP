@@ -53,8 +53,9 @@ rotate (Curve(cs)) d = Curve (map (rotate' d) cs)
 
 -- Translate a Curve around the plane.
 translate :: Curve -> Point -> Curve
-translate (Curve(p:ps)) p1 = Curve (map (+ p') (p:ps))
-  where p' = p1 - p
+--translate (Curve([]) p1 = Curve([])
+translate (Curve(p)) p1 = Curve (map (+ p') p)
+  where p' = p1 - (head p)
 
 -- Axis enumerations.
 data Axis = Vertical | Horizontal
@@ -88,29 +89,21 @@ toList (Curve ps) = ps
 -- Converts a curve to it's SVG-XML representation.
 toSVG :: Curve -> String
 toSVG c =
-    let (Point(xmin,ymin),Point(xmax,ymax)) = bbox c
-
-        pf = printf "%.2f"
+    let pf = printf "%.2f"
 
         coordConvert :: Point
-        coordConvert = Point(abs xmin,abs ymin)
+        coordConvert = fst $ bbox c
 
         screenCurve = (translate c coordConvert)
 
-        (Point(xmin',ymin'),Point(xmax',ymax')) = bbox screenCurve
-
-        imgWidth = max ((width screenCurve) + abs(xmin')) 2
-        imgHeight = max ((height screenCurve) + abs(ymin')) 2
+        imgWidth = max (ceiling $ width c :: Int) 2
+        imgHeight = max (ceiling $ height c :: Int) 2
 
 
         head = "<svg xmlns=\"http://www.w3.org/2000/svg\" " ++
                "width=\"" ++ (show imgWidth) ++ "\" " ++
                "height=\"" ++(show imgHeight) ++ "\" " ++
-               "version=\"1.1\">\n<g>\n" ++
-               "<!-- x-min'=" ++ show xmin' ++ " -->\n" ++
-               "<!-- y-min'=" ++ show ymin' ++ " -->\n" ++
-               "<!-- x-max'=" ++ show xmax' ++ " -->\n" ++
-               "<!-- y-max'=" ++ show ymax' ++ " -->\n"
+               "version=\"1.1\">\n<g>\n"
 
         foot = "</g>\n</svg>"
 
@@ -119,10 +112,10 @@ toSVG c =
         line (Curve(_:[]))      = ""
         line (Curve(Point(x1,y1):Point(x2,y2):rest)) =
             "<line style=\"stroke-width:2px; stroke:black; fill:white\" " ++
-            "x1=\"" ++ pf x1 ++ "\" " ++
-            "y1=\"" ++ pf (imgHeight - y1) ++ "\" " ++
-            "x2=\"" ++ pf x2 ++ "\" " ++
-            "y2=\"" ++ pf (imgHeight - y2) ++ "\" " ++
+            "x1=\"" ++ pf (abs x1) ++ "\" " ++
+            "y1=\"" ++ pf (abs y1) ++ "\" " ++
+            "x2=\"" ++ pf (abs x2) ++ "\" " ++
+            "y2=\"" ++ pf (abs y2) ++ "\" " ++
             "/>\n" ++
             line (Curve(Point(x2,y2):rest))
 
@@ -149,9 +142,9 @@ hilbert c = c0 `connect` c1 `connect` c2 `connect`c3
         c3 = ch `rotate` 90 `translate` (Point(0, h+p))
 
 -- Test to see if the created picture is indeed the Hilbert Curve.
-h :: Curve
-h = hilbert $ hilbert $ hilbert $ hilbert $ curve (Point(0,0)) []
--- toFile h "hilbert.svg"
+h1, h2 :: Curve
+h1 = hilbert $ hilbert $ hilbert $ hilbert $ curve (Point(0,0)) []
+h2 = hilbert $ hilbert $ hilbert $ hilbert $ hilbert $ hilbert $ hilbert $ curve (Point(0,0)) []
 
 
 -- PART 4 PEANO AND OTHER CURVES (OPTIONAL)
