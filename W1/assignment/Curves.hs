@@ -144,7 +144,7 @@ hilbert c = c0 `connect` c1 `connect` c2 `connect`c3
 -- Test to see if the created picture is indeed the Hilbert Curve.
 h1, h2 :: Curve
 h1 = hilbert $ hilbert $ hilbert $ hilbert $ curve (Point(0,0)) []
-h2 = hilbert $ hilbert $ hilbert $ hilbert $ hilbert $ hilbert $ hilbert $ curve (Point(0,0)) []
+h2 = hilbert $ hilbert $ hilbert $ hilbert $ hilbert $ hilbert $ curve (Point(0,0)) []
 
 
 -- PART 4 PEANO AND OTHER CURVES (OPTIONAL)
