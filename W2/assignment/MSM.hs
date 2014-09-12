@@ -4,7 +4,8 @@
 
 module MSM where
 
-import Data.Map (Map) -- used for registers
+import Data.Map (Map)
+import qualified Data.Map as Map -- used for registers
 
 data Inst
     = PUSH Int      -- pushes the integer constant n on top of the stack
@@ -53,10 +54,20 @@ data Error = Error
     deriving (Show, Eq)
 
 -- constructs the initial state of an MSM running the program
--- initial :: Prog -> State
--- initial p = State {prog=p, pc=0, stack=[], regs=Regs.empty}
+initial :: Prog -> State
+initial p = State {prog=p, pc=0, stack=[], regs=Map.empty}
 
-newtype MSM a = MSM (State -> State) -- not sure about State -> State
+newtype MSM a = MSM (State -> Int) -- not sure about State -> State
+
+instance Monad MSM where
+    -- (>>=) :: MSM a -> (a -> MSM b) -> MSM b
+    (MSM p) >>= (\x -> (MSM x)) = f p
+    
+    -- return :: a -> MSM a
+    -- return a = MSM a
+    
+    -- fail :: String -> MSM a
+    -- fail s = error s
 
 
 -- example program, expected to leave 42 on the top of the stack
