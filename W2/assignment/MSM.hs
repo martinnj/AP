@@ -4,6 +4,8 @@
 
 module MSM where
 
+import Data.Map (Map) -- used for registers
+
 data Inst
     = PUSH Int      -- pushes the integer constant n on top of the stack
     | POP           -- removes the top element of the stack
@@ -29,8 +31,24 @@ data Inst
     deriving (Eq,Show)
 type Prog = [Inst]
 
+type Stack = [Int]
+type Regs  = Map Int Int  -- key-value mappings?
+data State = State
+             { prog     :: [Inst]
+             , pc       :: Int
+             , stack    :: [Int]
+             , regs     :: Regs
+             }
+    deriving (Show)
+
 data ErrorType = StackUnderflow
                | UnallocatedRegister Int
                | RegisterAlreadyAllocated
                | InvalidPC
                | Unspec String
+
+data Error = Error
+             { errorType :: ErrorType } -- possibly missing records
+
+newtype MSM a = MSM (State -> State) -- not sure about State -> State
+
