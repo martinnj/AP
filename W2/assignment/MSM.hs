@@ -14,7 +14,7 @@ data Inst
     | NEWREG Int    -- allocates a new register n
     | LOAD          -- removes the top element n of the stack,
                     -- and pushes the content of register n on the stack
---  | STORE         -- removes the two top elements m and n of the stack, and
+    | STORE         -- removes the two top elements m and n of the stack, and
                     -- and stores the value m in register n. That is, store
                     -- the top of the stack in the register denoted by the
                     -- second topmost element of the stack, and remove both
@@ -46,9 +46,18 @@ data ErrorType = StackUnderflow
                | RegisterAlreadyAllocated
                | InvalidPC
                | Unspec String
+    deriving (Show, Read, Eq)
 
 data Error = Error
              { errorType :: ErrorType } -- possibly missing records
+    deriving (Show, Eq)
+
+-- constructs the initial state of an MSM running the program
+-- initial :: Prog -> State
+-- initial p = State {prog=p, pc=0, stack=[], regs=Regs.empty}
 
 newtype MSM a = MSM (State -> State) -- not sure about State -> State
 
+
+-- example program, expected to leave 42 on the top of the stack
+p42 = [NEWREG 0, PUSH 1, DUP, NEG, ADD, PUSH 40, STORE, PUSH 2, PUSH 0, LOAD, ADD, HALT]
