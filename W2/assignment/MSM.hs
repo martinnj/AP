@@ -40,9 +40,9 @@ type Prog  = [Inst]
 type Stack = [Int]
 type Regs  = Map Int Int  -- key-value mappings?
 data State = State
-             { prog     :: [Inst]
+             { prog     :: Prog
              , pc       :: Int
-             , stack    :: [Int]
+             , stack    :: Stack
              , regs     :: Regs
              }
     deriving (Show)
