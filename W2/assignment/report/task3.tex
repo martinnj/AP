@@ -1,1 +1,18 @@
+% usage: \codefig{label}{file}{firstline}{lastline}{description}
 \section{Error types}
+Although we have followed the templated error types, as specified in the
+assignment text, we found it hard to make use of the \code{Error} type, as the
+monad type class would not allow us to give \code{fail} and \code{Error} as
+its argument, which we thought were the best way to use it.
+
+To circumvent this issue we made a function that took an \code{ErrorType} (the
+declaration of which is shown below) and generated an appropriate string to
+pass on to \code{fail}.
+\codefig{error-types}{../MSM.hs}{50}{55}{Declarations of \code{ErrorType}}
+
+This \code{ErrorType}-to-\code{String} is simply done by pattern-matching
+each case and returning a corresponding string. The code for this is given
+below.
+\codefig{errToStr}{../MSM.hs}{60}{65}{Excerpt showing the \code{errToStr}
+function}
+
