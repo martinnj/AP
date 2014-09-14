@@ -42,7 +42,7 @@ type Regs  = Map Int Int  -- key-value mappings?
 data State = State
              { prog     :: [Inst]
              , pc       :: Int
-             , stack    :: [Int]
+             , stack    :: Stack
              , regs     :: Regs
              }
     deriving (Show)
