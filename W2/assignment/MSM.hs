@@ -75,10 +75,10 @@ instance Monad MSM where
                                                     in m s
                                     Left e -> Left e
                         )
-        
+
     -- return :: a -> MSM a
     return a = MSM (\s -> Right (s, a))
-    
+
     -- fail :: String -> MSM a
     fail s = MSM (\_ -> Left (strToErr s))
 
@@ -103,13 +103,17 @@ push a = do
     state <- get
     set state{stack=a:stack state, pc=pc state + 1}
 
-pop :: MSM ()
+--pop :: MSM () -- FIXME: Should be MSM Int according to task 5.
+pop :: MSM Int
 pop = do
     state <- get
     if length (stack state) < 1
     then fail "Stack Underflow"
-    else set state{stack=tail (stack state), pc=pc state + 1}
-    
+    else do
+         i <- return (head (stack state))
+         set state{stack=tail (stack state), pc=pc state + 1}
+         return i -- Does this make it Just Just Int?? Or is it ok?
+
 -- PREVIOUS, trying to match return-types
 --    State {prog=p, pc=i, stack=s:ss, regs=r} <- get
 --    set State{prog=p, pc=i+1, stack=ss, regs=r}
