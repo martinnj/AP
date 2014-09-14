@@ -1,2 +1,8 @@
-\section{\texttt{runMSM :: Prog -> Either Error Int}}
-\todo[inline]{Vi returnere \texttt{Either Error State} er det forkert? x)}
+\section{Running the MSM}
+The \code{runMSM} code was pretty much taken right out of the skeleton, with
+some slight adjustments.
+
+\codefig{runMSM}{../MSM.hs}{291}{293}{Excerpt showing the \code{runMSM}}
+Our \code{MSM} had its tuple data in reverse, if the
+\code{runMSM} is supposed to give back the state of the program as it halted.
+Therefore we had to change the \code{snd} part into \code{fst}.

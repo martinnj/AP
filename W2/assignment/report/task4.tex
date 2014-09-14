@@ -1,1 +1,21 @@
-\section{MicroStackMachine Monad/Applicative/Functor}
+\section{MicroStackMachine}
+
+\subsection{The MSM Monad}
+The bind operator of the \code{MSM} takes an \code{MSM a} and based on the
+evaluation of applying a state \code{x} to its contents \code{a} we either
+get an \code{Error} (which didn't get used properly) or a valid \code{State}.
+In the case of a valid \code{State} we apply the monadic function \code{f} to
+the result of the previous computation \code{r} producing the following
+\code{State}, as shown below, otherwise we propagate the \code{Error}.
+\codefig{monad}{../MSM.hs}{76}{89}{Excerpt showing the \code{MSM} monad.}
+
+\subsection{The MSM Functor}
+From following some documentation, we arrived at a pretty generic functor
+instance, as can be seen below.
+\codefig{monad}{../MSM.hs}{91}{93}{Excerpt showing the \code{MSM} functor.}
+
+\subsection{The MSM Applicative}
+We're not entirely sure what it actually does, but were told to remove the
+warning before handing in the assignment, so we puzzled this together in much
+the same manner as with the functor.
+\codefig{monad}{../MSM.hs}{95}{97}{Excerpt showing the \code{MSM} applicative.}

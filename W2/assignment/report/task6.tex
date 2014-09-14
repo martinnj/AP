@@ -1,1 +1,12 @@
-\section{\texttt{interp :: MSM ()}}
+\section{Instruction Interpreter}
+The function \code{interpInst} is very central to the program, as it parses
+out the current instruction of the program by way of pattern-matching. For
+each case we handle whatever errors can be handled at that level (further
+error-checking occurs within the corresponding monadic functions of the
+instruction to be executed). If no errors are found we perform the operation
+and return whether or not we wish to proceed with the program (ie. special
+cases like \code{HALT}, as shown below, does not continue). For instructions that need it the
+program counter is incremented.
+
+\codefig{interpInst}{../MSM.hs}{207}{212}{Excerpt from \code{interpInst}
+showing the \code{HALT} case.}
