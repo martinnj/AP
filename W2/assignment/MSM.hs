@@ -301,3 +301,18 @@ pushPop = [PUSH 1, PUSH 2, POP, PUSH 3, HALT]
 
 p42 :: [Inst]
 p42 = [NEWREG 0, PUSH 1, DUP, NEG, ADD, PUSH 40, STORE, PUSH 2, PUSH 0, LOAD, ADD, HALT]
+
+data Expr = Con Int
+          | Add Expr Expr
+    deriving (Eq, Show)
+
+value :: Expr -> Int
+value (Con n) = n
+value (Add x y) = value x + value y
+
+compile :: Expr -> Prog
+compile e = comp e [HALT]
+    where comp (Con n) prog = PUSH n : prog
+          comp (Add e1 e2) prog = comp e2 $ comp e1 $ ADD : prog
+
+pAdd = (compile (Add (Con 2) (Con 3)))
