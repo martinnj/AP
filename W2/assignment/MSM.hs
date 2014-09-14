@@ -183,18 +183,17 @@ cjmp i = do
     v <- pop
     if v < 0
     then do
-        push v
+        push i
         jmp
     else set state {pc=pc state + 1}
 
--- TODO: increment PC here, maybe? Perhaps?
+
 getInst :: MSM Inst
 getInst = do
     state <- get
-    if (pc state) < 0 || (pc state) > length (prog state)
+    if (pc state) < 0 || (pc state) > length (prog state) - 1
     then fail ( errToStr (InvalidPC))
-    else do
-        return $ (prog state) !! (pc state)
+    else return $ (prog state) !! (pc state)
 
 stackSize :: State -> Int
 stackSize state = length (stack state)
@@ -222,7 +221,7 @@ interpInst POP          = do
                             if stackSize state < 1
                             then fail (errToStr StackUnderflow)
                             else do
-                                pop
+                                pop -- This gives a warning since it discards the pop result.
                             return True
 interpInst DUP          = do
                             state <- get
@@ -275,7 +274,8 @@ interpInst (CJMP i)     = do
                             cjmp i
                             return True
 interpInst WRITE        = do
-                            s <- write
+                            --s <- write
+                            _ <- write
                             -- TODO: implement, no output
                             return True
 interpInst READ         = do
@@ -283,15 +283,21 @@ interpInst READ         = do
 
 interp :: MSM ()
 interp = run
-    where run = do inst <- getInst
-                   cont <- interpInst inst
-                   when cont run
+    where run = do
+            inst <- getInst
+            cont <- interpInst inst
+            when cont run
 
 runMSM :: Prog -> Either Error State
 runMSM p = let (MSM f) = interp
            in fmap fst $ f $ initial p
 
 -- example program, expected to leave 42 on the top of the stack
+erroneous :: [Inst]
 erroneous = [POP, HALT]
+
+pushPop :: [Inst]
 pushPop = [PUSH 1, PUSH 2, POP, PUSH 3, HALT]
+
+p42 :: [Inst]
 p42 = [NEWREG 0, PUSH 1, DUP, NEG, ADD, PUSH 40, STORE, PUSH 2, PUSH 0, LOAD, ADD, HALT]
