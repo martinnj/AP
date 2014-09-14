@@ -1,1 +1,84 @@
 \section{Manipulative Functions}
+The following subsections each pertain to a seperate function created to perform
+the actions of an instruction decoded from a MSM program.
+
+\subsection{\texttt{push}}
+\codefig{funpush}{../MSM.hs}{116}{119}{Function implementation}
+
+This function takes an integer as input and puts it on top of the stack, this is
+done by accessing the state of the MSM monad and appending it to the front of
+the stack list.
+
+\subsection{\texttt{pop}}
+\codefig{funpop}{../MSM.hs}{121}{129}{Function implementation}
+
+\texttt{pop} will access the state of the monad and retrieve the stack, if the
+stack is an empty list it will fail with the \texttt{StackUnderflow} error, if
+it is not, it will remove the first element and return it. The initial type
+decleration did not contain this, but it helps making some later functions
+(\texttt{store}, \texttt{load}, \texttt{neg}, \texttt{add}, \texttt{jmp} and
+\texttt{cjmp}) easier to write since they can use \texttt{pop} to retrieve data
+from the stack.
+
+\subsection{\texttt{dup}}
+\codefig{fundup}{../MSM.hs}{131}{134}{Function implementation}
+
+\texttt{dup} uses simple pattern matching to take the first element of a list
+and copy it.
+
+\subsection{\texttt{swap}}
+\codefig{funswap}{../MSM.hs}{136}{139}{Function implementation} \texttt{swap}
+uses simple pattern matching to re arrange the forward element of the stack.
+
+\subsection{\texttt{newreg}}
+\codefig{funnewreg}{../MSM.hs}{141}{144}{Function implementation}
+
+To insert a new entry into the \texttt{Map} we use \texttt{Map.insert} to insert
+it to the appropriate place, the data is initialized as a zero.
+
+\subsection{\texttt{store}}
+\codefig{funstore}{../MSM.hs}{146}{153}{Function implementation} \texttt{store}
+pops the two top elements of the stack, and checks if the corresponding register
+key, if there is no register with the key it will fail with the
+\texttt{UnallocatedRegister} error, else it will insert the key in the map and
+replae it in the monad.
+
+\subsection{\texttt{load}}
+\codefig{funload}{../MSM.hs}{155}{161}{Function implementation}
+
+\texttt{load} pops a key from the stack and tries to look it up in the register
+\texttt{Map}, if the method returns \texttt{Nothing} it means the register was
+unallocated and it fails with the \texttt{UnallocatedRegister} error. Otherwise
+it pushes the returned value unto the stack using the \texttt{push method.}
+
+\subsection{\texttt{neg}}
+\codefig{funneg}{../MSM.hs}{163}{166}{Function implementation}
+
+This method simply pops a stack entry and negates it before pushing it back on
+the stack.
+
+\subsection{\texttt{add}}
+\codefig{funadd}{../MSM.hs}{168}{172}{Function implementation}
+
+The \texttt{add} method pops two numbers from the stack and adds the together
+before pushing the result back on the stack.
+
+\subsection{\texttt{jmp}}
+\codefig{funjmp}{../MSM.hs}{174}{178}{Function implementation}
+
+\texttt{jmp} pops an integer from the stack and sets it as the value of the
+\texttt{PC} in the state of the monad.
+
+\subsection{\texttt{cjmp}}
+\codefig{funcjmp}{../MSM.hs}{180}{188}{Function implementation}
+
+This method pops a value from the stack, checks if it's less than zero, if it is
+it will push the argument $i$ unto the stack and call \texttt{jmp}. If the value
+is 0 or above, it will simply advance the program counter.
+
+\subsection{\texttt{write}}
+\codefig{funcjmp}{../MSM.hs}{111}{114}{Function implementation}
+
+The is the beginning of the optional \texttt{write} assignment. It was not
+finished.  Currently it will simply pop a value from the stack and return it as
+a string.

@@ -292,13 +292,31 @@ runMSM :: Prog -> Either Error State
 runMSM p = let (MSM f) = interp
            in fmap fst $ f $ initial p
 
--- example program, expected to leave 42 on the top of the stack
-erroneous :: [Inst]
-erroneous = [POP, HALT]
+-- Cause stack underflow.
+err0 :: [Inst]
+err0 = [POP, HALT]
 
+-- Cause invalid PC
+err1 :: [Inst]
+err1 = [PUSH 1, PUSH 2]
+
+-- stack should be [4,3]
+add0 :: [Inst]
+add0 = [PUSH 3, PUSH 2, PUSH 2, ADD, HALT]
+
+-- stack should be [3,1]
 pushPop :: [Inst]
 pushPop = [PUSH 1, PUSH 2, POP, PUSH 3, HALT]
 
+-- stack should be [1,1,1]
+dup0 :: [Inst]
+dup0 = [PUSH 1, DUP, DUP, HALT]
+
+-- Trigger unallocated register.
+st0 :: [Inst]
+st0 = [PUSH 20, PUSH 40, STORE, PUSH 3, PUSH 4]
+
+-- Leave stakc as [42] and register (0,40).
 p42 :: [Inst]
 p42 = [NEWREG 0, PUSH 1, DUP, NEG, ADD, PUSH 40, STORE, PUSH 2, PUSH 0, LOAD, ADD, HALT]
 

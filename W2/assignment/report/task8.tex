@@ -1,20 +1,38 @@
 \section{Tests}
-\subsection{\texttt{PUSH} \textit{n}}
-\subsection{\texttt{POP}}
-\subsection{\texttt{DUP}}
-\subsection{\texttt{SWAP}}
-\subsection{\texttt{NEWREG} \textit{n}}
-\subsection{\texttt{LOAD}}
-\subsection{\texttt{STORE}}
-\subsection{\texttt{NEG}}
-\subsection{\texttt{ADD}}
-\subsection{\texttt{JMP}}
-\subsection{\texttt{CJMP} \textit{i}}
-\subsection{\texttt{HALT}}
-\subsection{\texttt{WRITE}}
-\subsection{\texttt{READ}}
-\subsection{Other tests}
-\begin{enumerate}
-  \item No halt at program end.
-  \item The \texttt{p42} program.
-\end{enumerate}
+
+We did not have time to make some strictly structured tests but ran of a lot of
+ad-hoc instructions lists when debugging.
+
+Our MSM can sucesfully execute the \texttt{p42} program and will only have $42$
+left on the stack. Note that this is the expected behaviour since our
+\texttt{HALT} will not pop the last element and return it. During testing we
+found it more helpfull that it dumped the entire state of the MSM.
+
+We also included the QuickCheck code from the assignment text and created a
+single test of the addition operator.
+
+\codefig{tests}{../MSM.hs}{295}{336}{Our quickly scribbled test cases.}
+
+As seen in Figure \ref{code:tests} we also constructed a small amount of tests
+which represent our test patterns. As written we did a lot of tests during
+debugging we have not written down.
+
+% \subsection{\texttt{PUSH} \textit{n}}
+% \subsection{\texttt{POP}}
+% \subsection{\texttt{DUP}}
+% \subsection{\texttt{SWAP}}
+% \subsection{\texttt{NEWREG} \textit{n}}
+% \subsection{\texttt{LOAD}}
+% \subsection{\texttt{STORE}}
+% \subsection{\texttt{NEG}}
+% \subsection{\texttt{ADD}}
+% \subsection{\texttt{JMP}}
+% \subsection{\texttt{CJMP} \textit{i}}
+% \subsection{\texttt{HALT}}
+% \subsection{\texttt{WRITE}}
+% \subsection{\texttt{READ}}
+% \subsection{Other tests}
+% \begin{enumerate}
+%   \item No halt at program end.
+%   \item The \texttt{p42} program.
+% \end{enumerate}

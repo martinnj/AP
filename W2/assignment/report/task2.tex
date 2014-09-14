@@ -1,1 +1,22 @@
 \section{Types for modelling MSM states}
+For modelling the state we have 4 different types. For the stack itself we chose
+\texttt{[Int]} as seen in Figure \ref{code:stacktype} since we only have
+instructions that work on integers.
+\codefig{stacktype}{../MSM.hs}{40}{40}{Type decleration for the stack.}
+
+For the registers we chose to use the builtin \texttt{Data.Map} to have a
+sutrcture where it was easy to look up certain keys (register names in our case)
+for their corresponding values. As it can be seen in Figure \ref{code:regstype}
+we chose both keys and values to be of type \texttt{Int} since we only have
+operations for integers.
+
+\codefig{regstype}{../MSM.hs}{41}{41}{Type decleration for the Register bank.}
+
+For the state itself we declared a data structure called \texttt{State}, which
+can be seen in Figure \ref{code:statetype}. The \texttt{State} structure uses
+the types declared above and also includes a \textit{Program counter (PC)} which
+is declared as \texttt{Int}, since it represents the index of the instruction to
+execute in the list of instructions.
+
+\codefig{statetype}{../MSM.hs}{42}{48}{The State datatype declared using
+  peviously introduced types.}
