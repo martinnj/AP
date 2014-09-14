@@ -31,9 +31,11 @@ data Inst
                     -- than zero the PC is set to i, otherwise the PC (program
                     -- counter) is incremented by one
     | HALT          -- halt the machine without an error
+    | WRITE
+    | READ
     deriving (Eq,Show)
 
-type Prog = [Inst]
+type Prog  = [Inst]
 type Stack = [Int]
 type Regs  = Map Int Int  -- key-value mappings?
 data State = State
@@ -51,12 +53,15 @@ data ErrorType = StackUnderflow
                | Unspec String
     deriving (Show, Read, Eq)
 
-data Error = Error { errorType :: ErrorType } -- could add generic error messages
+data Error = Error { errorType :: ErrorType } -- could add error messages
     deriving (Show, Eq)
 
-strToErr :: String -> Error
-strToErr s = case s of
-                "Invalid PC" -> Error { errorType=InvalidPC }
+errToStr :: ErrorType -> String
+errToStr StackUnderflow             = "Stack Underflow"
+errToStr InvalidPC                  = "Invalid PC"
+errToStr (UnallocatedRegister n)    = "Unallocated Register at " ++ (show n)
+errToStr RegisterAlreadyAllocated   = "Register Already Allocated"
+errToStr (Unspec s)                 = "Unspecified " ++ (show s)
 
 -- constructs the initial state of an MSM running the program
 initial :: Prog -> State
@@ -80,7 +85,7 @@ instance Monad MSM where
     return a = MSM (\s -> Right (s, a))
 
     -- fail :: String -> MSM a
-    fail s = MSM (\_ -> Left (strToErr s))
+    fail e = error e
 
 instance Functor MSM where
     -- fmap :: (Functor f) => (a -> b) -> f a -> f b
@@ -98,21 +103,24 @@ modify f = do
     state <- get
     MSM (\_ -> Right (f state, () ) )
 
+write :: MSM String
+write = do
+    v <- pop
+    return (show v)
+
 push :: Int -> MSM ()
 push a = do
     state <- get
-    set state{stack=a:stack state, pc=pc state + 1}
+    set state{stack=a:stack state}
 
---pop :: MSM () -- FIXME: Should be MSM Int according to task 5.
 pop :: MSM Int
 pop = do
-    state <- get
-    if length (stack state) < 1
-    then fail "Stack Underflow"
-    else do
-         i <- return (head (stack state))
-         set state{stack=tail (stack state), pc=pc state + 1}
-         return i -- Does this make it Just Just Int?? Or is it ok?
+    State {prog=p, stack=s:ss, pc=i, regs=r} <- get
+    -- fix; set state, but return the value
+    if length (s:ss) < 1
+    then fail (errToStr (StackUnderflow))
+    else set State {prog=p, stack=ss, pc=i, regs=r}
+    return s
 
 -- PREVIOUS, trying to match return-types
 --    State {prog=p, pc=i, stack=s:ss, regs=r} <- get
@@ -122,26 +130,128 @@ pop = do
 dup :: MSM ()
 dup = do
     State {prog=p, pc=i, stack=s:ss, regs=r} <- get
-    set State{prog=p, pc=i+1, stack=s:s:ss, regs=r}
+    set State{prog=p, pc=i, stack=s:s:ss, regs=r}
 
 swap :: MSM ()
 swap = do
     State {prog=p, pc=i, stack=a:b:ss, regs=r} <- get
-    set State{prog=p, pc=i+1, stack=b:a:ss, regs=r}
+    set State{prog=p, pc=i, stack=b:a:ss, regs=r}
 
+newreg :: Int -> MSM ()
+newreg n = do
+    state <- get
+    set state { regs=Map.insert n 0 (regs state) }
+
+store :: MSM ()
+store = do
+    state <- get
+    v <- pop
+    k <- pop
+    set state { regs = Map.insert k v (regs state) }
+
+load :: MSM ()
+load = do
+    state <- get
+    k <- pop
+    case Map.lookup k (regs state) of
+        Just v -> push v
+        Nothing -> fail (errToStr (UnallocatedRegister k))
+
+neg :: MSM ()
+neg = do
+    v <- pop
+    push (-v)
+
+add :: MSM ()
+add = do
+    a <- pop
+    b <- pop
+    push (a + b)
+
+jmp :: MSM ()
+jmp = do
+    state <- get
+    d <- pop
+    set state { pc=d }
+
+cjmp :: Int -> MSM ()
+cjmp i = do
+    state <- get
+    v <- pop
+    if v < 0
+    then do
+        push v
+        jmp
+    else set state {pc=pc state + 1}
+
+-- TODO: increment PC here, maybe? Perhaps?
 getInst :: MSM Inst
 getInst = do
     state <- get
     if (pc state) < 0 || (pc state) > length (prog state)
-    then fail "Invalid PC"
-    else return $ (prog state) !! (pc state)
+    then fail ( errToStr (InvalidPC))
+    else do
+        return $ (prog state) !! (pc state)
 
 interpInst :: Inst -> MSM Bool
-interpInst inst = do
-    state <- get
-    case inst of
-        POP -> pop
-    return True
+interpInst HALT         = return False
+interpInst (PUSH v)     = do
+                            push v
+                            state <- get
+                            set state {pc=pc state + 1}
+                            return True
+interpInst POP          = do
+                            v <- pop
+                            state <- get
+                            set state {pc=pc state + 1}
+                            return True
+interpInst DUP          = do
+                            dup
+                            state <- get
+                            set state {pc=pc state + 1}
+                            return True
+interpInst SWAP         = do
+                            swap
+                            state <- get
+                            set state {pc=pc state + 1}
+                            return True
+interpInst (NEWREG n)   = do
+                            newreg n
+                            state <- get
+                            set state {pc=pc state + 1}
+                            return True
+interpInst STORE        = do
+                            store
+                            state <- get
+                            set state {pc=pc state + 1}
+                            return True
+interpInst LOAD         = do
+                            load
+                            state <- get
+                            set state {pc=pc state + 1}
+                            return True
+interpInst NEG          = do
+                            neg
+                            state <- get
+                            set state {pc=pc state + 1}
+                            return True
+interpInst ADD          = do
+                            add
+                            state <- get
+                            set state {pc=pc state + 1}
+                            return True
+interpInst JMP          = do
+                            jmp
+                            return True
+interpInst (CJMP i)     = do
+                            cjmp i
+                            return True
+interpInst WRITE        = do
+                            s <- write
+                            -- TODO: implement, no output
+                            return True
+interpInst READ         = do
+                            return True
 
 interp :: MSM ()
 interp = run
@@ -149,10 +259,11 @@ interp = run
                    cont <- interpInst inst
                    when cont run
 
-runMSM :: Prog -> Either Error ()
+runMSM :: Prog -> Either Error State
 runMSM p = let (MSM f) = interp
-           in fmap snd $ f $ initial p
+           in fmap fst $ f $ initial p
 
 -- example program, expected to leave 42 on the top of the stack
+erroneous = [POP, HALT]
 pushPop = [PUSH 1, PUSH 2, POP, PUSH 3, HALT]
 p42 = [NEWREG 0, PUSH 1, DUP, NEG, ADD, PUSH 40, STORE, PUSH 2, PUSH 0, LOAD, ADD, HALT]
