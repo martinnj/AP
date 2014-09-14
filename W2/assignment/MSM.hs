@@ -122,7 +122,7 @@ pop :: MSM Int
 pop = do
     state <- get
     case (stack state) of
-        [] -> fail (errToStr InvalidPC)
+        [] -> fail (errToStr StackUnderflow)
         _  -> let hd = head (stack state)
               in do
                 set state {stack=tail (stack state)}
@@ -205,7 +205,12 @@ isAllocated state k = case Map.lookup k (regs state) of
                         Nothing -> False
 
 interpInst :: Inst -> MSM Bool
-interpInst HALT         = return False
+interpInst HALT         = do
+                            state <- get
+                            set state {pc=pc state + 1}
+                            if stackSize state < 1
+                            then fail (errToStr StackUnderflow)
+                            else return False
 interpInst (PUSH v)     = do
                             state <- get
                             set state {pc=pc state + 1}
