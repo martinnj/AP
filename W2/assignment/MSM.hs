@@ -4,10 +4,11 @@
 
 module MSM where
 
+import Control.Applicative
+import Control.Monad
+
 import Data.Map (Map)
 import qualified Data.Map as Map -- used for registers
-
-import Control.Monad
 
 data Inst
     = PUSH Int      -- pushes the integer constant n on top of the stack
@@ -91,6 +92,10 @@ instance Functor MSM where
     -- fmap :: (Functor f) => (a -> b) -> f a -> f b
     fmap f xs = xs >>= return . f
 
+instance Applicative MSM where
+    pure = return
+    df <*> dx = df >>= \f -> dx >>= return . f
+
 -- monadic functions
 get :: MSM State
 get = MSM (\s -> Right (s,s))
@@ -115,17 +120,13 @@ push a = do
 
 pop :: MSM Int
 pop = do
-    State {prog=p, stack=s:ss, pc=i, regs=r} <- get
-    -- fix; set state, but return the value
-    if length (s:ss) < 1
-    then fail (errToStr (StackUnderflow))
-    else set State {prog=p, stack=ss, pc=i, regs=r}
-    return s
-
--- PREVIOUS, trying to match return-types
---    State {prog=p, pc=i, stack=s:ss, regs=r} <- get
---    set State{prog=p, pc=i+1, stack=ss, regs=r}
---    return s
+    state <- get
+    case (stack state) of
+        [] -> fail (errToStr InvalidPC)
+        _  -> let hd = head (stack state)
+              in do
+                set state {stack=tail (stack state)}
+                return hd
 
 dup :: MSM ()
 dup = do
@@ -144,10 +145,12 @@ newreg n = do
 
 store :: MSM ()
 store = do
-    state <- get
     v <- pop
     k <- pop
-    set state { regs = Map.insert k v (regs state) }
+    state <- get
+    if not (isAllocated state k)
+    then fail (errToStr (UnallocatedRegister k))
+    else set state { regs = Map.insert k v (regs state) }
 
 load :: MSM ()
 load = do
@@ -193,52 +196,72 @@ getInst = do
     else do
         return $ (prog state) !! (pc state)
 
+stackSize :: State -> Int
+stackSize state = length (stack state)
+
+isAllocated :: State -> Int -> Bool
+isAllocated state k = case Map.lookup k (regs state) of
+                        Just _ -> True
+                        Nothing -> False
+
 interpInst :: Inst -> MSM Bool
 interpInst HALT         = return False
 interpInst (PUSH v)     = do
-                            push v
                             state <- get
                             set state {pc=pc state + 1}
+                            push v
                             return True
 interpInst POP          = do
-                            v <- pop
                             state <- get
                             set state {pc=pc state + 1}
+                            if stackSize state < 1
+                            then fail (errToStr StackUnderflow)
+                            else do
+                                pop
                             return True
 interpInst DUP          = do
-                            dup
                             state <- get
                             set state {pc=pc state + 1}
+                            if stackSize state < 1
+                            then fail (errToStr StackUnderflow)
+                            else do
+                                dup
                             return True
 interpInst SWAP         = do
-                            swap
                             state <- get
                             set state {pc=pc state + 1}
+                            if stackSize state < 2
+                            then fail (errToStr StackUnderflow)
+                            else do
+                                swap
                             return True
 interpInst (NEWREG n)   = do
-                            newreg n
                             state <- get
                             set state {pc=pc state + 1}
+                            newreg n
                             return True
 interpInst STORE        = do
-                            store
                             state <- get
                             set state {pc=pc state + 1}
+                            if stackSize state < 2
+                            then fail (errToStr (StackUnderflow))
+                            else do
+                                store
                             return True
 interpInst LOAD         = do
-                            load
                             state <- get
                             set state {pc=pc state + 1}
+                            load
                             return True
 interpInst NEG          = do
-                            neg
                             state <- get
                             set state {pc=pc state + 1}
+                            neg
                             return True
 interpInst ADD          = do
-                            add
                             state <- get
                             set state {pc=pc state + 1}
+                            add
                             return True
 interpInst JMP          = do
                             jmp
