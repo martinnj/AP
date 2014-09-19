@@ -1,10 +1,12 @@
--- Assignment for Week 2 of AP
+-- Assignment for Week 3 of AP
 -- Martin Jørgensen, tzk173
 -- Casper B. Hansen, fvx507
 
 module CurvySyntax where
 
 import CurveAST
+
+import Text.Parsec
 
 -- Errors can be added ad-libitum.
 data Error = Some | Other
