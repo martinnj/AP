@@ -1,0 +1,3 @@
+-- Assignment for Week 2 of AP
+-- Martin Jørgensen, tzk173
+-- Casper B. Hansen, fvx507
