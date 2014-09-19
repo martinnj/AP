@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Ken Friis Larsen (kflarsen@diku.dk)">
+  <title>Curvy Syntax</title>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="Curvy%20Syntax_files/css.css">
+  <link rel="stylesheet" href="Curvy%20Syntax_files/style.css">
+</head>
+<body>
+<header>
+<h1 class="title">Curvy Syntax</h1>
+<h2 class="author">Ken Friis Larsen <code>(kflarsen@diku.dk)</code></h2>
+<h3 class="date">Last revision: September 15, 2014</h3>
+</header>
+<nav id="TOC">
+<ul>
+<li><a href="#objective">Objective</a></li>
+<li><a href="#abstract-syntax">Abstract syntax</a></li>
+<li><a href="#what-to-hand-in">What to hand in</a></li>
+<li><a href="#implement-a-parser">Implement a parser</a></li>
+</ul>
+</nav>
+<h2 id="objective"><a href="#TOC">Objective</a></h2>
+<p>The objective of this assignment is to gain hands-on programming experience with parser combinators using Haskell.</p>
+<p>The goal is to implement a parser for a small domain-specific language for defining curves like those in Assignment 0.</p>
+<pre><code>Program ::= Defs
+Defs  ::= Def
+       |  Def Defs
+Def   ::= Ident '=' Curve
+       |  Ident '=' Curve 'where' '{' Defs '}'
+Curve ::= Curve '++' Curve
+       |  Curve '^' Curve
+       |  Curve '-&gt;' Point
+       |  Curve '**' Expr
+       |  Curve 'refv' Expr
+       |  Curve 'refh' Expr
+       |  Curve 'rot' Expr
+       |  '(' Curve ')'
+       |  Point
+       |  Ident
+Point ::= '(' Expr ',' Expr ')'
+Expr  ::= Expr '+' Expr
+       |  Expr '*' Expr
+       |  'width' Curve
+       |  'height' Curve
+       |  Number
+       |  '(' Expr ')'</code></pre>
+<p>Where <code>Ident</code> is a a non-empty sequence of letters, digits and underscores (<code>_</code>), that is not one of the reserved words: <code>where</code>, <code>refv</code>, <code>refh</code>, <code>rot</code>, <code>width</code>, or <code>height</code>.</p>
+<p><code>Number</code> is a floating-point number satisfying the following regular expression: <code>[0-9]+(\.[0-9]+)?</code>.</p>
+<p>Tokens are separated by whitespaces (spaces, tabs, and newlines), 
+zero or more for symbolic tokens, and at least one blank for 
+alphanumeric tokens.</p>
+<p>The curve operators <code>++</code> and <code>^</code> are left-associative and <code>^</code> binds stronger (has higher precedence) than <code>++</code>, likewise <code>-&gt;</code> binds stronger than <code>^</code>, and so on for the order of operators as listed in the grammar.</p>
+<p>The arithmetic operators have the standard associativity and precedences, and have higher precedence than curve operators.</p>
+<h2 id="abstract-syntax"><a href="#TOC">Abstract syntax</a></h2>
+<p>Your parser must generate abstract syntax trees represented with the following data types defined in the <code>CurveAST</code> module, and reproduced below. Note that you should <em>not</em> reproduce this AST definiton in your parser, but use <code>import CurveAST</code>.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Program</span> <span class="fu">=</span> [<span class="dt">Def</span>]
+<span class="kw">data</span> <span class="dt">Def</span> <span class="fu">=</span> <span class="dt">Def</span> <span class="dt">Ident</span> <span class="dt">Curve</span> [<span class="dt">Def</span>] <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">data</span> <span class="dt">Curve</span> <span class="fu">=</span> <span class="dt">Connect</span> <span class="dt">Curve</span> <span class="dt">Curve</span>
+           <span class="fu">|</span> <span class="dt">Over</span> <span class="dt">Curve</span> <span class="dt">Curve</span>
+           <span class="fu">|</span> <span class="dt">Translate</span> <span class="dt">Curve</span> <span class="dt">Point</span>
+           <span class="fu">|</span> <span class="dt">Scale</span> <span class="dt">Curve</span> <span class="dt">Expr</span>
+           <span class="fu">|</span> <span class="dt">Refv</span> <span class="dt">Curve</span> <span class="dt">Expr</span>
+           <span class="fu">|</span> <span class="dt">Refh</span> <span class="dt">Curve</span> <span class="dt">Expr</span>
+           <span class="fu">|</span> <span class="dt">Rot</span> <span class="dt">Curve</span> <span class="dt">Expr</span>
+           <span class="fu">|</span> <span class="dt">Single</span> <span class="dt">Point</span>
+           <span class="fu">|</span> <span class="dt">Id</span> <span class="dt">Ident</span>
+           <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Expr</span> <span class="dt">Expr</span> <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">data</span> <span class="dt">Expr</span> <span class="fu">=</span> <span class="dt">Mult</span> <span class="dt">Expr</span> <span class="dt">Expr</span>
+          <span class="fu">|</span> <span class="dt">Add</span> <span class="dt">Expr</span> <span class="dt">Expr</span>
+          <span class="fu">|</span> <span class="dt">Width</span> <span class="dt">Curve</span>
+          <span class="fu">|</span> <span class="dt">Height</span> <span class="dt">Curve</span>
+          <span class="fu">|</span> <span class="dt">Const</span> <span class="dt">Number</span>
+          <span class="kw">deriving</span> (<span class="dt">Eq</span>, <span class="dt">Show</span>)
+<span class="kw">type</span> <span class="dt">Ident</span> <span class="fu">=</span> <span class="dt">String</span>
+<span class="kw">type</span> <span class="dt">Number</span> <span class="fu">=</span> <span class="dt">Double</span></code></pre>
+<p>Where the <code>Connect</code> constructor corresponds to the <code>++</code> operator, the <code>Over</code> constructor corresponds to the <code>^</code> operator, the <code>Scale</code> constructor is for <code>**</code> on curves, and the <code>Translate</code> constructor is for the <code>-&gt;</code> operator. How the rest of the constructors relate to the syntax should be straightforward.</p>
+<p>The above code can be found in the file <a href="http://www.diku.dk/%7Ekflarsen/ap-e2014/curves/CurveAST.hs"><code>CurveAST.hs</code></a>. You should not need to change this file, unless you are told so on Absalon. If in doubt, ask in the forum.</p>
+<p><em>(Side note for the curious: The meaning of the <code>Over</code> operator <code>c1 ^ c2</code> is that start point of <code>c1</code> is translated to the start point of <code>c2</code>, then <code>c1</code> is translated up until the bottom of <code>c1</code>’s bounding box is over the bounding box of <code>c2</code>, and finally the start point of (the translated) <code>c1</code> is connected to the end point of <code>c2</code>.)</em></p>
+<h2 id="what-to-hand-in"><a href="#TOC">What to hand in</a></h2>
+<p>You should hand in two things:</p>
+<ol type="1">
+<li>Your code in a file called <code>CurvySyntax.hs</code>, defining a Haskell module by the name of <code>CurvySyntax</code> that exports the API defined below.</li>
+<li>A short report explaining the code, and an assessment of the quality
+ of code including what this assessment is based on. In the report, you 
+should:</li>
+</ol>
+<ul>
+<li>include the grammar you are using, if you make any transformations on the grammar.</li>
+<li>include a test suite with at least five example of valid curve 
+programs that are parsed correctly, and four negative examples of curve 
+programs that are not quite syntactically correct. Explain why you have 
+chosen those examples.</li>
+</ul>
+<p>To keep your TA happy, follow these simple rules:</p>
+<ol type="1">
+<li>Your Haskell code must not use partial functions.</li>
+<li>GHC, with the parameters <code>-Wall</code> and <code>-fno-warn-unused-do-bind</code> set, should not yield any errors or warnings for your code.</li>
+<li><code>hlint</code> should not yield any hints for your code.</li>
+</ol>
+<h2 id="implement-a-parser"><a href="#TOC">Implement a parser</a></h2>
+<p>Choose a parser library: SimpleParse, ReadP, or Parsec.</p>
+<p>Only plain Parsec is allowed, namely the following submodules <code>Text.Parsec.Prim</code>, <code>Text.Parsec.Char</code>, <code>Text.Parsec.Error</code>, <code>Text.Parsec.String</code> and <code>Text.Parsec.Combinator</code> (or the compatibility modules <code>Text.ParserCombinators.Parsec.Prim</code>, <code>Text.ParserCombinators.Parsec.Char</code>, <code>Text.ParserCombinators.Parsec.Error</code>, <code>Text.ParserCombinator.Parsec.String</code> and <code>Text.ParserCombinators.Parsec.Combinator</code>), in particular you are <strong>disallowed</strong> to use <code>Text.Parsec.Token</code>, <code>Text.Parsec.Language</code>, and <code>Text.Parsec.Expr</code>. If in doubt, don’t use Parsec.</p>
+<p>Implement the API:</p>
+<ul>
+<li><p>A function <code>parseString</code> for parsing a curve program:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">parseString ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Either</span> <span class="dt">Error</span> <span class="dt">Program</span></code></pre>
+<p>Where you decide and specify what the type <code>Error</code> should be.</p>
+<p>For example, <code>parseString "c = (0,0) ++ (5, 42.5)"</code> should give</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Right</span> [<span class="dt">Def</span> <span class="st">"c"</span> (<span class="dt">Connect</span> (<span class="dt">Single</span> (<span class="dt">Point</span> (<span class="dt">Const</span> <span class="dv">0</span><span class="fu">.</span><span class="dv">0</span>) (<span class="dt">Const</span> <span class="dv">0</span><span class="fu">.</span><span class="dv">0</span>)))
+                        (<span class="dt">Single</span> (<span class="dt">Point</span> (<span class="dt">Const</span> <span class="dv">5</span><span class="fu">.</span><span class="dv">0</span>) (<span class="dt">Const</span> <span class="dv">42</span><span class="fu">.</span><span class="dv">5</span>)))) []]</code></pre></li>
+<li><p>A function <code>parseFile</code> for parsing a curve program in a file:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">parseFile ::</span> <span class="dt">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Either</span> <span class="dt">Error</span> <span class="dt">Program</span>)</code></pre>
+<p>Where <code>Error</code> is the same type as for <code>parseString</code>.</p>
+<p>You decide whether to use functionality from the parser library of your choice, or use the following implementation:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell">parseFile filename <span class="fu">=</span> fmap parseString <span class="fu">$</span> readFile filename</code></pre></li>
+</ul>
+<p>End of assignment text.</p>
+
+
+</body></html>

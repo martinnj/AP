@@ -1,0 +1,47 @@
+body {
+    margin-top: 1.0em;
+    background-color: white;
+    font-family: 'Gentium Book Basic', sans-serif;
+/*   font-size: 1.143em;
+*/    font-size: 12pt;
+    color: black;
+    width: 90%;
+    margin: 0 auto;
+}
+
+code {
+   font-family: Inconcolata, Menlo, monospace;
+/*   font-size: 1.136em;
+*/    font-size: 11pt;;  
+   background-color: #F0F3F3;
+
+}
+
+pre {
+   background-color: #F0F3F3;
+   padding: 6px;
+   word-wrap: break-word;
+   white-space: pre-wrap;
+   font-family: Inconcolata, Menlo, monospace;
+   border: 1px solid silver;
+/*    font-size: 15pt;
+*/}
+
+h1.title {
+    font-family: 'Dancing Script', sans-serif;
+    text-align: center; font-size: 3.8em; color: black; margin-bottom: 3px;
+}
+h1 .small { font-size: 0.4em; }
+h1 a { text-decoration: none }
+h2 { font-size: 1.5em; color: black; }
+h2.author { font-size: 1em; text-align: center; color: black; }
+h3.date {  font-size: 1em; text-align: center; color: black; }
+a { color: black; }
+.description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+.download { float: right; }
+/* pre { background: #000; color: #fff; padding: 15px;} */
+hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+.footer { text-align:center; padding-top:30px; font-style: italic; }
+table   { border-collapse: collapse }
+td { border: 1px solid black }
+
