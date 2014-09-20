@@ -30,25 +30,17 @@ import Text.Parsec.Combinator
 data Error = Some | Other
 
 -- parses identifiers
-ident :: GenParser Char st String
-ident = many1 letter <++> opt
+ident :: GenParser Char st Ident
+ident = (many1 letter <++> opt)
     where opt = option "" $ (letter <|> digit <|> sym) <:> opt
           sym = oneOf "_"
 
 -- parses floating-point numbers
-number :: GenParser Char st Double
+number :: GenParser Char st Number
 number = fmap rd (num <++> dec)
     where rd  = read :: String -> Double
           num = many1 digit
           dec = option "" $ char '.' <:> num
-
-expr :: GenParser Char st Expr
-expr =  (do n <- number
-            return (Const n) ) <|>
-        (do e1 <- expr
-            char '+'
-            e2 <- expr
-            return (Add e1 e2 ))
 
 -- matches terminals of a point, discarding symbols
 point :: GenParser Char st Point
@@ -56,9 +48,41 @@ point = pointify <$> (char '(' *> expr) <*>
                      (char ',' *> expr <* char ')') 
     where pointify a b = Point a b
 
+-- parses curves
+curve :: GenParser Char st Curve
+curve = id <$> ident <|>
+        single <$> point <|>
+    where single p      = Single p
+          id s          = Id s
 
-parser :: String -> Either ParseError Point
-parser str = parse point "Error!" str 
+-- parses expressions
+expr = width <|> height <|> e0 <|> e1
+    where width     = (do string "width"
+                          spaces
+                          c <- curve
+                          return $ Width c)
+          height    = (do string "height"
+                          spaces
+                          c <- curve
+                          return $ Height c)
+          e0 = chainl1 e1 op0
+          e1 = chainl1 t op1
+
+-- parses terminal symbols
+t = do n <- number
+       return $ Const n
+
+-- parses precedence level 0
+op0 = (do string "+"
+          return Add)
+
+-- parses precedence level 1
+op1 = (do string "*"
+          return Mult)
+
+
+parser :: String -> Either ParseError Curve
+parser str = parse curve "Error!" str 
 
 -- parseString "c = (0,0) ++ (5, 42.5)" --should be
 -- Right [Def "c" (Connect (Single (Point (Const 0.0) (Const 0.0)))
