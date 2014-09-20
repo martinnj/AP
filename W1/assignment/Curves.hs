@@ -113,9 +113,9 @@ toSVG c =
         line (Curve(Point(x1,y1):Point(x2,y2):rest)) =
             "<line style=\"stroke-width:2px; stroke:black; fill:white\" " ++
             "x1=\"" ++ pf (abs x1) ++ "\" " ++
-            "y1=\"" ++ pf (abs y1) ++ "\" " ++
+            "y1=\"" ++ pf (fromIntegral(imgHeight) - abs y1) ++ "\" " ++
             "x2=\"" ++ pf (abs x2) ++ "\" " ++
-            "y2=\"" ++ pf (abs y2) ++ "\" " ++
+            "y2=\"" ++ pf (fromIntegral(imgHeight) - abs y2) ++ "\" " ++
             "/>\n" ++
             line (Curve(Point(x2,y2):rest))
 

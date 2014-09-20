@@ -1,6 +1,18 @@
-\section{Test with Hilbert Curves}
-We failed in producing a correct Hilbert curve. We did however see parts of it
-drawn to some extent, but failed to find the source of the problem. We do know
-for a fact that the conversion to screen coordinate system is flawed, but some
-of the issues may also stem from our manipulatory library functions.
+\section{Test with Hilbert Curves (changed for resubmission)}
+%We failed in producing a correct Hilbert curve. We did however see parts of it
+%drawn to some extent, but failed to find the source of the problem. We do know
+%for a fact that the conversion to screen coordinate system is flawed, but some
+%of the issues may also stem from our manipulatory library functions.
 
+For the resubmission we have fixed the \texttt{toSVG} function so it now looks
+like Figure \ref{code:tosvg} and produces the following pictures without
+problems.
+
+\graphicc{0,5}{img/resubmit0.png}{The ``M'' figure still works after
+  resubmission.}{fig:resubmit0}
+
+\graphicc{0.5}{img/resubmit1.png}{The Hilbert space filling figure now
+  works.}{fig:resubmit11}
+
+\codefig{tosvg}{../Curves.hs}{89}{122}{The toSVG function after being fixed for
+  resubmission.}
