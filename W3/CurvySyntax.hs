@@ -6,9 +6,7 @@ module CurvySyntax where
 
 import CurveAST
 
-import Control.Applicative hiding ((<|>),Const)
-
--- <|> : either
+import Control.Applicative hiding ((<|>),Const,optional)
 
 -- allowed:
 import Text.Parsec.Prim
@@ -44,42 +42,51 @@ number = fmap rd (num <++> dec)
 
 -- matches terminals of a point, discarding symbols
 point :: GenParser Char st Point
-point = pointify <$> (char '(' *> expr) <*>
-                     (char ',' *> expr <* char ')') 
+point = pointify <$>
+    (char '(' *> expr) <*> (char ',' *> expr <* char ')') 
     where pointify a b = Point a b
 
 -- parses curves
 curve :: GenParser Char st Curve
-curve = id <$> ident <|>
-        single <$> point <|>
-    where single p      = Single p
-          id s          = Id s
+curve = chainl1 c1 conn
+    where c1   = chainl1 p0 over
+          conn = (do string "++"; return Connect)
+          over = (do string "^";  return Over)
+          -- point matches
+          p0 = (do c <- e0; string "->"; a <- point;  return $ Translate c a)
+          -- expression matches
+          e0 = (do c <- e1; _ <- string "**"; a <- expr;   return $ Scale c a)
+          e1 = (do c <- e2; _ <- string "refv"; a <- expr; return $ Refv c a)
+          e2 = (do c <- e3; _ <- string "refh"; a <- expr; return $ Refh c a)
+          e3 = (do c <- ct; string "rot"; a <- expr;  return $ Rot c a)
+          ct = (id <$> ident) <|> (single <$> point)
+              where single p = Single p
+                    id s     = Id s
+
+{- tried this, blew up '^' and '++' :'(
+          p0 = do c <- ct
+                  f <- many1 (oneOf "roefvh*->")
+                  p <- optionMaybe point
+                  e <- optionMaybe expr
+                  case (f, p, e) of
+                       ("->", Just a, _) -> return $ Translate c a
+                       ("**", _, Just a) -> return $ Scale c a
+-}
 
 -- parses expressions
+expr :: GenParser Char st Expr
 expr = width <|> height <|> e0 <|> e1
     where width     = (do string "width"
-                          spaces
                           c <- curve
                           return $ Width c)
           height    = (do string "height"
-                          spaces
                           c <- curve
                           return $ Height c)
           e0 = chainl1 e1 op0
           e1 = chainl1 t op1
-
--- parses terminal symbols
-t = do n <- number
-       return $ Const n
-
--- parses precedence level 0
-op0 = (do string "+"
-          return Add)
-
--- parses precedence level 1
-op1 = (do string "*"
-          return Mult)
-
+          t = (do n <- number; return $ Const n)
+          op0 = (do string "+"; return Add)
+          op1 = (do string "*"; return Mult)
 
 parser :: String -> Either ParseError Curve
 parser str = parse curve "Error!" str 
