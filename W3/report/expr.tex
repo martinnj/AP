@@ -1,1 +1,36 @@
 \subsection{Expr}
+
+This section is about the buttom most part of the grammar, the expressions. This
+part cannot contain any other types of nodes except for numbers. The grammar for
+expressions looks like so:
+\begin{verbatim}
+Expr  ::= Expr '+' Expr
+       |  Expr '*' Expr
+       |  'width' Curve
+       |  'height' Curve
+       |  Number
+       |  '(' Expr ')'
+\end{verbatim}
+
+Starting with the simplest we first created the only real terminal in the
+language, the ``number'', the code can ben see in Figure \ref{code:terminal}.
+
+\codefig{terminal}{../CurvySyntax.hs}{72}{73}{Implementaiton of the terminal
+  ``number''.} %TODO: Fix line numbers.
+
+The next part of the expressions we implemented was addition and multiplication,
+which like the number terminal is easy to implement as can be seen in Figure
+\ref{code:add} and Figure \ref{code:mult}.
+
+\codefig{add}{../CurvySyntax.hs}{76}{77}{Implementation of the \texttt{+}
+  operator.}
+\codefig{mult}{../CurvySyntax.hs}{80}{81}{Implementation of the \texttt{*}
+  operator.}
+
+The above functions are bound together in the implementation of the parser
+\texttt{expr} which is shown in \ref{code:expr}.
+
+\codefig{expr}{../CurvySyntax.hs}{59}{69}{The final expression parser.}
+
+We first try to match expressions with \texttt{width}, the \texttt{height}, then
+\texttt{*} and lastly \texttt{+}.
