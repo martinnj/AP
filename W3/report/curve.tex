@@ -1,1 +1,16 @@
 \subsection{Curve}
+In implementing the curve operations parser we ran into trouble, as our parser
+failed to backtrack from the \code{e3} case. What happens is that the parser
+keeps tracking downward sequentially (see lines 56--62 in figure
+\ref{code:curve}). Although one might issue a translation operation, the first
+statement on each line will try to evaluate the \code{c}, which leads it to
+bottom out in a \code{Single}, since it doesn't match an \code{Id}. But when
+it moves on to match on the string, it does so in \code{e3} (we believe), so
+it will expect that the operator be \code{rot}, not \code{->} as was issued.
+
+\codefig{curve}{../CurvySyntax.hs}{50}{64}{The (flawed) implementation of the
+curve parser}
+
+A temporary fix was made to ensure that at least \code{Connect} and
+\code{Over} worked. This was done by substituting \code{p0} for \code{ct} on
+line 52.
