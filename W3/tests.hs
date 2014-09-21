@@ -1,10 +1,14 @@
 -- Assignment tests for Week 3 of AP
--- Martin Jørgensen, tzk173
+-- Martin Jrgensen, tzk173
 -- Casper B. Hansen, fvx507
 
 import CurveAST
 import CurvySyntax
 import Test.HUnit
+
+exprTest0 = TestCase $ assertEqual "zero"
+        (parse expr "errorMsg" "1+2")
+        (Right (Add (Const 1) (Const 2)))
 
 --test0 = TestCase $ assertEqual "Simple assignment"
 --        (parseString "c = (0,0)")
