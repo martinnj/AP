@@ -67,7 +67,7 @@
 
 \title
 {
-    {\Large Weekly Assignment 3} \\
+    {\Large Weekly Assignment 2} \\
     Advanced Programming 2014 @ DIKU
 }
 
@@ -92,14 +92,21 @@
 \thispagestyle{empty}
 \begin{multicols}{2}
     \begin{abstract}
-        ...
+      A parser should be implemented for a domain specific language, descriping
+      curves and operations on them.
     \end{abstract}
     \vfill{\ }\columnbreak
     \tableofcontents
 \end{multicols}
 \clearpage
 
-% \input{task1}
-% \input{quickcheck}
+\section{Parser}
+\input{small}   % For the small bits of the grammar
+\input{expr}    % For the expressions grammar thing
+\input{curve}   % For the curve grammar thing
+\input{parse}   % For the parseString and parseFile methods. :)
+
+\section{Testing}
+\input{testing} % Guess what goes here?
 
 \end{document}
