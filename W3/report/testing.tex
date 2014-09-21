@@ -1,2 +1,18 @@
 \subsection{Positive tests}
+
+\begin{description}
+\item[Assignment test:] Lets see if it will do a simple Def.
+  \codefig{test0}{../tests.hs}{1}{11}{First test and the program ``headers''.}
+
+\item[Test from assignment:] This test is based of the assignment where a case
+  is given for some input and the expected output. The HUnit code for this check
+  can be seen in Figure \ref{code:test1}.
+  \codefig{test2}{../tests.hs}{9}{12}{A test from the assignment text.}
+
+\item[Simple binding test:] We wanted to test that the precedence of our Curve
+  operators were correct, in this case that \texttt{\^} binds stronger than
+  \texttt{++}.
+  \codefig{test2}{../tests.hs}{14}{19}{Testing operator precedence.}
+\end{description}
+
 \subsection{Negative tests}
