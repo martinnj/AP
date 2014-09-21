@@ -1,5 +1,5 @@
 -- Assignment for Week 3 of AP
--- Martin Jørgensen, tzk173
+-- Martin Jorgensen, tzk173
 -- Casper B. Hansen, fvx507
 
 module CurvySyntax where
