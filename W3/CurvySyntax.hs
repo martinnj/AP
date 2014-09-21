@@ -55,9 +55,9 @@ curve = chainl1 c1 conn
           -- point matches
           p0 = (do c <- e0; string "->"; a <- point;  return $ Translate c a)
           -- expression matches
-          e0 = (do c <- e1; _ <- string "**"; a <- expr;   return $ Scale c a)
-          e1 = (do c <- e2; _ <- string "refv"; a <- expr; return $ Refv c a)
-          e2 = (do c <- e3; _ <- string "refh"; a <- expr; return $ Refh c a)
+          e0 = (do c <- e1; string "**"; a <- expr;   return $ Scale c a)
+          e1 = (do c <- e2; string "refv"; a <- expr; return $ Refv c a)
+          e2 = (do c <- e3; string "refh"; a <- expr; return $ Refh c a)
           e3 = (do c <- ct; string "rot"; a <- expr;  return $ Rot c a)
           ct = (id <$> ident) <|> (single <$> point)
               where single p = Single p
