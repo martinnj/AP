@@ -4,11 +4,28 @@
 
 import CurveAST
 import CurvySyntax
-import Test.HUnit
 
-exprTest0 = TestCase $ assertEqual "zero"
-        (parse expr "errorMsg" "1+2")
-        (Right (Add (Const 1) (Const 2)))
+-- allowed:
+import Text.Parsec.Prim
+import Text.Parsec.Char
+import Text.Parsec.Error
+import Text.Parsec.String
+import Text.Parsec.Combinator
+
+exprTest0 = (parse expr "error0" "1+2")
+exprTest1 = (parse expr "error1" "1*2")
+exprTest2 = (parse expr "error2" "width (0,0)++(1,1)") -- Expected fail, currently.
+exprTests = [exprTest0,
+             exprTest1,
+             exprTest2]
+
+curveTest0 = (parse curve "error3" "(0,0)^(1,1)")
+curveTest1 = (parse curve "error4" "(0,0)++(1,1)")
+curveTest2 = (parse curve "error5" "(0,0)")
+curveTest = [curveTest0,
+             curveTest1,
+             curveTest2]
+
 
 --test0 = TestCase $ assertEqual "Simple assignment"
 --        (parseString "c = (0,0)")
