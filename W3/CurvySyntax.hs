@@ -49,7 +49,7 @@ point = pointify <$>
 -- parses curves
 curve :: GenParser Char st Curve
 curve = chainl1 c1 conn
-    where c1   = chainl1 p0 over
+    where c1   = chainl1 ct over
           conn = (do string "++"; return Connect)
           over = (do string "^";  return Over)
           -- point matches
