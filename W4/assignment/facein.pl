@@ -12,7 +12,10 @@ g([person(susan, [reed, jen, andrzej, jessica]),
    person(tony, []),
    person(ken, [andrzej]),
    person(jen, [tony, susan, jessica]),
-   person(andrzej, [susan, ken])]).
+   person(andrzej, [susan, ken]),
+   person(martin, [casper, erik]),
+   person(casper, [martin, erik]),
+   person(erik, [martin, casper])]).
 
 graph :- g(G).
 
@@ -33,15 +36,25 @@ friends_of([person(H, HS) | T], X, XS) :- friends_of(T, X, XS).
 % we say that X and Y are good friends if they are on each others' friend
 % lists.
 goodfriends(G, X, Y) :-
-    member_of(person(X,_), G),
-    member_of(person(Y,_), G),
+    member_of(person(X,_), G), % prevent infinite recursion
+    member_of(person(Y,_), G), % prevent infinite recursion
     friends_of(G, X, XS),
     friends_of(G, Y, YS),
     member_of(X, YS),
     member_of(Y, XS).
 
-/*
-goodfriends(G, X, Y) :-
-    friends(G, X, Y),
-    friends(G, Y, X)
- */
+% Recursively check if X is good friends with a list of names.
+friendCheck(G, X, [H |[]]) :- goodfriends(G,X,H).
+friendCheck(G, X, [H | T]) :- goodfriends(G,X,H) , friendCheck(G, X, T).
+
+% Checks if everyone in a list of names are "good" friends,
+% list must have at least 2 names.
+clique(G, [H |[M | _]]) :- friendCheck(G, H, [T]).
+clique(G, [H | T]) :- friendCheck(G, H, T) , clique(G, T).
+
+% 1. lav liste over alle i G
+% 2. hjælpe funktion til at fjerne X i XS
+% 3. wannabe' til at vedligeholde en liste af manglende X'er i XS
+
+% A wannabe is someone who transitively is friends with everyone.
+wannabe(G, X).
