@@ -1,18 +1,17 @@
 \documentclass[a4paper,11pt]{article}
 \usepackage{a4wide}
+%\usepackage{appendix}
 \usepackage[utf8x]{inputenc}
 \usepackage{ucs}
 \usepackage[T1]{fontenc}
 \linespread{1.2}
 \usepackage{amsmath,amssymb,amsthm,amsfonts,ulem}
 \usepackage{courier}
-% \usepackage{fourier}
 \usepackage{color}
-% \usepackage{clrscode3e}
 \usepackage{mdwlist}
 \usepackage{multicol}
-\setcounter{secnumdepth}{0}
-\setcounter{tocdepth}{3}
+%\setcounter{secnumdepth}{1}
+%\setcounter{tocdepth}{3}
 \usepackage{todonotes}
 \usepackage{hyperref}
 \usepackage{listings}
@@ -31,6 +30,8 @@
 \newcommand{\code}[1]{{\tt #1}}
 \newcommand{\file}[1]{{\tt #1}}
 
+\newcommand{\assignment}{../assignment/facein.pl}
+
 % usage: \codefig{label}{file}{firstline}{lastline}{description}
 \newcommand{\codefig}[5]
 {
@@ -48,7 +49,7 @@
 
 \lstset
 {
-    language=haskell,
+    language=prolog,
     % general settings
     numbers=left,
     frame=single,
@@ -99,11 +100,14 @@
 \end{multicols}
 \clearpage
 
-\section{...}
-%\todo[inline]{Fix the line numbers for all code figs!}
-%\input{expr}    % For the expressions grammar thing
+\input{goodfriends}
+\input{cliques}
+\input{wannabe}
+\input{idols}
+\input{paths}
 
-\section{Testing}
-\input{testing} % Guess what goes here?
+\appendix
+\input{helpers}
+\input{tests}
 
 \end{document}
