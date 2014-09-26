@@ -23,18 +23,12 @@ graph :- g(G).
 member_of(X, [X | T]).
 member_of(X, [H | T]) :- member_of(X, T).
 
-%member_of(X, [person(X, XS) | T]).
-%member_of(X, [person(H, HS) | T]) :- member_of(X, T).
-
 % friends_of(G, X, XS)
 friends_of([person(X, []) | T], X, []).
 friends_of([person(X, XS) | T], X, XS).
 friends_of([person(H, HS) | T], X, XS) :- friends_of(T, X, XS).
 
 % goodfriends(G, X, Y)
-%
-% we say that X and Y are good friends if they are on each others' friend
-% lists.
 goodfriends(G, X, Y) :-
     member_of(person(X,_), G), % prevent infinite recursion
     member_of(person(Y,_), G), % prevent infinite recursion
