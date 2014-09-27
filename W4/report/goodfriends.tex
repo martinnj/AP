@@ -4,9 +4,12 @@
 
 \section{Good Friends}
 We say that $X$ and $Y$ are good friends if $X \in F(Y)$ and $Y \in F(X)$,
-where $F(Z)$ denotes the friends of $Z$.
+where $F(Z)$ denotes the friends of $Z$. Our implementation of the
+\code{goodfriends} rule {\it extracts} the friends of $X$ and $Y$ on lines
+29--30, and then checks that $X$ is in $Y$'s friends, and vice versa.
 
-\codefig{goodfriends}{\assignment}{31}{38}{...}
+\codefig{goodfriends}{\assignment}{25}{32}{The implementation of
+\code{goodfriends}}
 
-As can be seen from the code above, lines 33--34 ensures that $X \in G$ and
-$Y \in G$.
+Note that \code{member\_of} replicates the built-in \code{member} rule, and
+its implementation can be reviewed in section \ref{appendix:member_of}.
