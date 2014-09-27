@@ -1,0 +1,21 @@
+We did not manage to write the overall parser due to time constraint, so we
+instead call \texttt{parse} directly from parsec with one of our parsers, and
+some input. We will test these independently.
+
+We tried to use HUnit to tests the parser, but ran out of time for finishing it
+up. Since our parsers are incomplete, they return a lot fo intermediary types
+that HUnit did not have comparison operators for. Thus the tests are all manual,
+we hade some fixed strings we used for testing the different parser. A select
+few of them can be seen below in Figure \ref{code:exortests} and Figure
+\ref{code:curvetests}.
+
+\subsection{Expression tests}
+
+\codefig{exprtests}{../tests.hs}{15}{20}{Our tests for our expression
+  parser. Note that the third test is supposed to throw Aan error.}
+
+
+\subsection{Curves tests}
+
+\codefig{curvetests}{../tests.hs}{22}{27}{Our tests for the curves parser, non
+  of them are expected to cause errors.}

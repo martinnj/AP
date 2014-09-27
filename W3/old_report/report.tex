@@ -100,12 +100,13 @@
 \end{multicols}
 \clearpage
 
-\section{Introduction}
-For the resubmission we have changed to a new parser library, instead of going
-with Parsec we switched to ReadP which proved to be easier to work with for our
-simple purposes.
+\section{Parser}
+%\todo[inline]{Fix the line numbers for all code figs!}
+\input{expr}    % For the expressions grammar thing
+\input{curve}   % For the curve grammar thing
+\input{parse}   % For the parseString and parseFile methods. :)
 
-\input{parse}
-\input{testing}
+\section{Testing}
+\input{testing} % Guess what goes here?
 
 \end{document}
