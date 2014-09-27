@@ -236,7 +236,6 @@ parseFile filename = fmap parseString $ readFile filename
 
 
 -- Let the testing begin!
-
 runTests :: IO ()
 runTests = do
   -- The test lines will get a bit long, sorry about that :/

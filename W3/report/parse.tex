@@ -15,6 +15,24 @@ for the method can be seen in Figure \ref{code:progparser}.
 \codefig{progparser}{../CurvySyntax2.hs}{89}{94}{The implementation of the
   \texttt{prog} method which parses programs/lists of definitions.}
 
+This pattern is repeating through the whole parser combinator ``tree'' where a
+general parser will call smaller parsers on the sub components, for instance
+\texttt{prog} will call the \texttt{defs} parsers which calls the \texttt{def}
+parser and so on. The code can be seen in Figure \ref{code:defdefs}.
+
+
+\codefig{defdefs}{../CurvySyntax2.hs}{96}{106}{Parse a list of definitions.}
+
+Parsers suffixed with ``op'' are parsers which handle ``operators'' for a
+different parser, for instance \texttt{expr} have \texttt{exprop} which will
+handle the operators in expressions. This can be seen in Figure
+\ref{code:exprexprop}
+
+\codefig{exprexprop}{../CurvySyntax2.hs}{183}{211}{Parse expressions.}
+
+There is more code, but this shold give a look into how our code is constructed.
+
+
 \subsection{\texttt{parseString}}
 Uses readP to parse a string with the parsers defined earlier in the program.
 

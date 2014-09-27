@@ -1,1 +1,23 @@
 \section{Testing}
+
+As before we did a number of just random testing, and then constructed a number
+of larger tests for the report. The tests and code for running them can be seen
+in Figure \ref{code:tests}.
+
+
+Testing is done simply by loading the module and running the \texttt{runTests}
+method. This will run 6 different tests and print the result like so:
+\begin{verbatim}
+0=OK
+1=OK
+2=OK
+3=OK
+4=OK
+5=OK
+\end{verbatim}
+
+If one of the tests fail it will read ``FAIL'' instead of ``OK'' in the list.
+The tests are designed so they test a number of things such as the precedence of
+operators, assignments and expressions.
+
+\codefig{tests}{../CurvySyntax2.hs}{238}{259}{Method for running all our tests.}
