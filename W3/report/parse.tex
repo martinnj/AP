@@ -1,11 +1,31 @@
+\section{Parsing}
+
+\subsection{Partwise parsers}
+To allow for nore readable code the parser is split into different smaller
+parsers/methods. Topmost in the file we have a number of smaller convenience
+parsers such as \texttt{charToken}, \texttt{stringToken}, \texttt{number} and so
+forth. These are meant to catch and parse small components that are likely to be
+used by severeal other parsers.
+
+The main parser is the one that parses ``programs'', it is called form
+\texttt{parseString} and will in turn call the rest of the parsers (indirectly
+of course, since it only really calls the \texttt{defs} parser itself. The code
+for the method can be seen in Figure \ref{code:progparser}.
+
+\codefig{progparser}{../CurvySyntax2.hs}{89}{94}{The implementation of the
+  \texttt{prog} method which parses programs/lists of definitions.}
+
 \subsection{\texttt{parseString}}
-We didn't get the parser to a fully working state, as evident of the section
-describing the curve parser. Therefore, there isn't much to tell about our
-\code{parseString} function, since it depends on it.
+Uses readP to parse a string with the parsers defined earlier in the program.
+
+\codefig{parsestring}{../CurvySyntax2.hs}{226}{231}{The implementation of the
+  \texttt{parseString} method.}
+
+
 
 \subsection{\texttt{parseFile}}
 \texttt{parseFile} was implemented with the suggestion from the assignment text
 and can be seen in Figure \ref{code:parsefile}.
 
-\codefig{parsefile}{../CurvySyntax.hs}{101}{102}{The implementation of the
+\codefig{parsefile}{../CurvySyntax2.hs}{233}{235}{The implementation of the
   \texttt{parseFile} method.}

@@ -61,7 +61,12 @@ idolp(G, X, [K|[]]) :-transitive(G,K,X).
 idolp(G, X, [H|T]) :- transitive(G,H,X), idolp(G,X,T).
 
 % An idol is a person who is transitively liked by everyone.
-idol(G,X) :- idolp(G,X,XS), member_of(person(XS,_),G). %FIXME: ... fix me?
+idol(G, X) :-
+    G = [person(H, _) | []],
+    transitive(G, H, X).
+idol(G, X) :-
+    G = [person(H, _) | T],
+    transitive(G, H, X), idol(T, X). %FIXME: ... fix me?
 
 
 % directional relationship
