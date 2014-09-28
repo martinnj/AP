@@ -8,8 +8,25 @@
 \subsection{Membership}
 \label{appendix:member_of}
 The \code{member\_of} rule returns true iff. $X \in L$.
-\codefig{member_of}{\assignment}{21}{23}{The implementation of \code{member\_of}}
+\codefig{member_of}{\assignment}{21}{23}{The implementation of
+\code{member\_of}}
 
 \subsection{Friend Check}
 \label{appendix:friendCheck}
-\codefig{friendCheck}{\assignment}{34}{36}{The implementation of \code{friendCheck}}
+The \code{friendCheck} rule returns true iff. $\forall y \in L ( y \in F(x)
+)$, where $F(Z)$ denotes the friends of $Z$.
+\codefig{friendCheck}{\assignment}{34}{36}{The implementation of
+\code{friendCheck}}
+
+\subsection{Transitive}
+\label{appendix:transitive}
+The \code{transitive} rule returns true iff. there is a transitive
+relationship between $A$ and $C$, recursively.
+\codefig{transitive}{\assignment}{45}{51}{The implementation of
+\code{transitive}}
+
+\subsection{Directional Relationships}
+\label{appendix:drel}
+The \code{drel} rule returns true iff. $( D = \text{'->'} \land A \in F(B) )
+\lor ( D = \text{'<-'} \land B \in F(B) )$.
+\codefig{drel}{\assignment}{69}{74}{The implementation of \code{drel}}

@@ -50,10 +50,8 @@ transitive(G, A, C) :-
     member_of(B, AS),
     (member_of(C, BS); transitive(G, B, C)).
 
-
 % A wannabe is someone who transitively is friends with everyone.
 wannabe(G, X) :- transitive(G,X,Y), member_of(person(Y,_),G).
-
 
 % Check recursively if there is a transitive "like"-link from all
 % persons in the list to X.
@@ -67,7 +65,6 @@ idol(G, X) :-
 idol(G, X) :-
     G = [person(H, _) | T],
     transitive(G, H, X), idol(T, X). %FIXME: ... fix me?
-
 
 % directional relationship
 drel(G, D, A, B) :-
