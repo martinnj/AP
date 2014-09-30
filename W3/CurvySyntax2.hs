@@ -15,15 +15,15 @@ type Error = String
 -- Convenience and basic things :)
 
 -- Parses chars
-charToken :: Char -> ReadP ()
-charToken c = do
+chrToken :: Char -> ReadP ()
+chrToken c = do
   skipSpaces
   _ <- char c
   skipSpaces
 
 -- Parses strings
-stringToken :: String -> ReadP ()
-stringToken s = do
+strToken :: String -> ReadP ()
+strToken s = do
   skipSpaces
   _ <- string s
   skipSpaces
@@ -64,7 +64,7 @@ term = do
 -- Term parsing
 termop :: Expr -> ReadP Expr
 termop val = (do
-                 _ <- charToken '*'
+                 _ <- chrToken '*'
                  f <- factor
                  termop(Mult val f)
              ) <++ return val
@@ -76,9 +76,9 @@ factor = number +++ parens expr
 -- Parse expressions in paranthesis
 parens :: ReadP a -> ReadP a
 parens e = do
-  charToken '('
+  chrToken '('
   ex <- e
-  charToken ')'
+  chrToken ')'
   return ex
 
 -- Well, yes. digits.
@@ -101,17 +101,17 @@ defs = many def
 def :: ReadP Def
 def = do
   iden <- ident
-  _ <- charToken '='
+  _ <- chrToken '='
   ct <- curve
   defop (Def iden ct [])
 
 -- Parse "operators" in Defs
 defop :: Def -> ReadP Def
 defop inval@(Def iden ct _) = (do
-      _ <- stringToken "where"
-      _ <- charToken '{'
+      _ <- strToken "where"
+      _ <- chrToken '{'
       dv <- defs
-      _ <- charToken '}'
+      _ <- chrToken '}'
       return $ Def iden ct dv)
   <++ return inval
 
@@ -150,22 +150,22 @@ curveop val = (do
                   curveop(Refv val ex)
               ) <++
               (do
-                  _ <- stringToken "**"
+                  _ <- strToken "**"
                   ex <- expr
                   curveop(Scale val ex)
               ) <++
               (do
-                  _ <- stringToken "->"
+                  _ <- strToken "->"
                   p <- point
                   curveop(Translate val p)
               ) <++
               (do
-                  _ <- stringToken "^"
+                  _ <- strToken "^"
                   c <- curve
                   curveop(Over val c)
               ) <++
               (do
-                  _ <- stringToken "++"
+                  _ <- strToken "++"
                   c <- curve
                   curveop(Connect val c)
               ) <++ return val
@@ -173,11 +173,11 @@ curveop val = (do
 -- Parse point
 point :: ReadP Point
 point = do
-  _ <- charToken '('
+  _ <- chrToken '('
   ex1 <- expr
-  _ <- charToken ','
+  _ <- chrToken ','
   ex2 <- expr
-  _ <- charToken ')'
+  _ <- chrToken ')'
   return $ Point ex1 ex2
 
 -- Parse expressions.
@@ -202,10 +202,10 @@ expr = (do
        )
 
 -- Parse expression operators.
--- Notice that multiplication is kept in "term" further up.
+-- Notice that multiplication is handled in "term" further up.
 exprop :: Expr -> ReadP Expr
 exprop val = (do
-                 _ <- charToken '+'
+                 _ <- chrToken '+'
                  t <- term
                  exprop(Add val t)
              ) <++ return val
