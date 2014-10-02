@@ -41,30 +41,31 @@ friendCheck(G, X, [H | T]) :- goodfriends(G,X,H) , friendCheck(G, X, T).
 clique(G, [H, M | _]) :- friendCheck(G, H, [M]).
 clique(G, [H | T]) :- friendCheck(G, H, T), clique(G, T).
 
+% returns true iff. B is a friend of A
+friend(G, A, B) :-
+    member_of(person(A, AS), G),
+    member_of(person(B, _), G),
+    member_of(B, AS).
+
+myselect(H, [H|T], T).
+myselect(X, [H|T], [H|R]) :- myselect(X, T, R).
 
 % Checks if there is a transitive relation between A and C.
+transitive(_, I, I).
+transitive(G, A, B) :- friend(G, A, B).
 transitive(G, A, C) :-
-    member_of(person(A, AS), G),
-    member_of(person(B, BS), G),
-    member_of(person(C, _), G),
+    myselect(person(A, AS), G, R),
     member_of(B, AS),
-    (member_of(C, BS); transitive(G, B, C)).
+    transitive(R, B, C).
 
 % A wannabe is someone who transitively is friends with everyone.
 wannabe(G, X) :- transitive(G,X,Y), member_of(person(Y,_),G).
 
-% Check recursively if there is a transitive "like"-link from all
-% persons in the list to X.
-idolp(G, X, [K|[]]) :-transitive(G,K,X).
-idolp(G, X, [H|T]) :- transitive(G,H,X), idolp(G,X,T).
-
 % An idol is a person who is transitively liked by everyone.
-idol(G, X) :-
-    G = [person(H, _) | []],
-    transitive(G, H, X).
-idol(G, X) :-
-    G = [person(H, _) | T],
-    transitive(G, H, X), idol(T, X). %FIXME: ... fix me?
+idol([], _).
+idol([person(H, HS) | T],  X) :-
+    transitive([person(H, HS) | T], H, X),
+    idol(T, X).
 
 % directional relationship
 drel(G, D, A, B) :-
