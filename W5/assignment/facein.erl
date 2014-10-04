@@ -20,59 +20,67 @@ add_friend(P, F) ->
 friends(P) ->
     rpc(P, friends).
 
-broadcast(P, M, R) -> P ! {self(), {broadcast, make_ref(), P, M, R}}.
-
-
-pass_msg(UID, F, M, R) ->
-    case F of
-        [H|[]]  -> H ! {self(), {broadcast, UID, H, M, R-1}};
-        [H|T]   -> H ! {self(), {broadcast, UID, H, M, R-1}},
-                   pass_msg(UID, T, M, R-1)
-    end.
+broadcast(P, M, R) ->
+    P ! {self(), {broadcast, make_ref(), P, M, R}}.
 
 received_messages(P) ->
     rpc(P, messages).
 
+pass_msg(UID, FS, P, M, R) ->
+    case FS of
+        [{_,F}|[]]  -> F ! {self(), {broadcast, UID, P, M, R}};
+        [{_,F}|T]   -> F ! {self(), {broadcast, UID, P, M, R}},
+                       pass_msg(UID, T, P, M, R)
+    end.
+
 loop({N, L, MSG}) ->
+    io:format('Person: ~w~nFriends: ~w~nMessages: ~w~n', [N, L, MSG]),
     receive
-        % a) something descriptive here
+        % b) adds a friend
         {From, {add, P}} ->
             P ! {self(), {name, N}},
             receive
-                {P, ok} -> From ! {self(), ok}
+                {P, ok}                 -> From ! {self(), ok};
+                {P, {error, Reason}}    -> From ! {self(), {error, Reason}}
             end,
             loop({N, L, MSG});
         
-        % b) baah :)
         {From, {name, F}} ->
-            From ! {self(), ok},
-            loop({N, [{F, From}|L], MSG});
+            case lists:member({F, From}, L) of
+                true    -> From ! {self(), {error, 'Already on friend list'}},
+                           loop({N, L, MSG});
+                false   -> From ! {self(), ok},
+                           loop({N, [{F, From}|L], MSG})
+            end;
         
-        % c) retrives the friends
+        % c) retrives the friend list
         {From, friends} ->
             From ! {self(), L},
             loop({N, L, MSG});
         
-        % d) ...
+        % d) broadcast a message M from person P within radius R
         {_, {broadcast, UID, P, M, 0}} ->
-            P ! {self(), {message, UID, M}},
+            self() ! {P, {message, UID, M}},
             loop({N, L, MSG});
-        
         {_, {broadcast, UID, P, M, R}} ->
-            P ! {self(), {message, UID, M}},
-            F = friends(P),
-            if not(F == []) -> pass_msg(UID, F, M, R) end,
-            loop({N, L, MSG});
+            self() ! {P, {message, UID, M}},
+            case L of
+                []  -> loop({N, L, MSG});
+                L   -> pass_msg(UID, L, P, M, R-1),
+                       loop({N, L, MSG})
+            end;
+            
         
+        % adds a message, if it's not already added
         {From, {message, UID, M}} ->
             case lists:member({UID, From, M}, MSG) of
                 true  -> loop({N, L, MSG});
                 false -> loop({N, L, [{UID, From, M}|MSG]})
             end;
         
-        % e) ...
+        % e) retrieves the received messages
         {From, messages} ->
-            Messages = lists:map ( fun({_, F, M}) -> {F, M} end, MSG ),
+            Messages = lists:map ( fun({_, F, M}) -> {F, M} end, MSG),
             From ! {self(), Messages},
             loop({N, L, MSG});
              

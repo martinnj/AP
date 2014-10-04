@@ -31,6 +31,7 @@ facein:add_friend(Susan, Jen).
 facein:add_friend(Susan, Jessica).
 facein:add_friend(Susan, Reed).
 
+
 % friend list tests
 io:format("Andrzej's friends:~n~w~n", [facein:friends(Andrzej)]).
 io:format("Jen's friends:~n~w~n", [facein:friends(Jen)]).
@@ -40,5 +41,7 @@ io:format("Reed's friends:~n~w~n", [facein:friends(Reed)]).
 io:format("Susan's friends:~n~w~n", [facein:friends(Susan)]).
 io:format("Tony's friends:~n~w~n", [facein:friends(Tony)]).
 
-facein:broadcast(Reed, "Hello!", 1).
+facein:broadcast(Reed, "Hello!", 10).
+
+io:format("Reed's messages:~n~w~n", [facein:received_messages(Tony)]).
 
