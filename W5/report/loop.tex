@@ -1,1 +1,44 @@
 \section{Main loop}
+This section covers the main loop. Since this function is big and clearly
+segmented, we will cover it case for case. For the full implementation either
+consult the \textit{facein.erl} file or see Figure \ref{code:fullloop}.
+
+\texttt{loop} takes a triple as argument, the triple contains the name of the
+person, the list of their friends and a list of messages the person have
+recieved. The loop will wait to recieve a message and then depending on pattern
+matching will performs actions as descriped in the following subsections.
+
+\subsection{Adding friends}
+Adding a friends is a 2 step process, as descriped in \texttt{add\_friend} the
+person we want to add ($F$) to a friendslist ($P$s friendlist), recieves a
+message with a pattern as shown in \ref{code:add}.
+
+\codefig{add}{\assignment}{39}{46}{The pattern that catches the first step of a
+  friend request.}
+
+When the process recieves the proper message it will send a message to $P$ with
+it's own PID and name and then await a reply from $P$. The reply will the be
+forwarded back to the caller. In the end it will call itself (\texttt{loop})
+with it's own name, friends and messages.
+
+\codefig{name}{\assignment}{48}{54}{Adding a friend to a friendlist and
+  responding.}
+
+The second step is in $P$ which matches a message with the pattern shown in
+Figure \ref{code:name} it will check if $F$ is already on $P$'s friendlist, if
+it is it will send an error back, otherwise it will send an \texttt{ok} back and
+then call \texttt{loop} with it's name, it's friendlist with $F$ appended and
+the message list.
+
+\subsection{Retrieving friends}
+
+\codefig{friends}{\assignment}{56}{59}{Retrieving the friendlist and sending it
+  back.}
+
+When a message matches the pattern seen in Figure \ref{code:friends} it will
+respond with a message containing it's ID a friend list before it restarts the
+\texttt{loop} method with the same arguments.
+
+\subsection{Broadcasting a message}
+\subsection{Retrieving messages}
+\subsection{Invalid message}

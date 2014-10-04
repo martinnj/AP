@@ -34,7 +34,7 @@ pass_msg(UID, FS, P, M, R) ->
     end.
 
 loop({N, L, MSG}) ->
-    io:format('Person: ~w~nFriends: ~w~nMessages: ~w~n', [N, L, MSG]),
+    %io:format('Person: ~w~nFriends: ~w~nMessages: ~w~n', [N, L, MSG]),
     receive
         % b) adds a friend
         {From, {add, P}} ->

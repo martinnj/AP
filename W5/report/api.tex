@@ -1,1 +1,53 @@
 \section{API methods}
+
+The API visible functions and the module name is declared in the two lines in
+\ref{code:api}.
+
+\codefig{api}{\assignment}{6}{7}{Module name and API function exports.}
+
+Some of the API functions uses a helper function called \texttt{rpc}, the method
+is defined in \ref{code:rpc}. This function simple sends a message to a
+specified process, and posts the response the target process sends back.
+
+\codefig{rpc}{\assignment}{11}{15}{The RPC function.}
+
+\subsection{\texttt{start}}
+\codefig{start}{\assignment}{9}{9}{The \texttt{start} function.}  Figure
+\ref{code:start} shows our implementation of \texttt{start(N)}, it quite simply
+takes a name and starts the main loop function in a new thread. The loop gets
+started with a name, no friends and no messages.
+
+\subsection{\texttt{add\_friend}}
+\codefig{addfriend}{\assignment}{17}{18}{Text}
+
+Figure \ref{code:addfriend} shows the \texttt{add\_friends} function, this
+function takes 2 PIDs as arguments, since we want to add $F$s name to P's
+friendslist we chose to send a signal (\texttt{\{add, P\}}) to $F$ instructing
+it do send it's name to $P$. Please read the section about the main loop to see
+how this is implemented. Because we use the \texttt{rpc} function we will wait
+for a response and return it to the caller.
+
+\subsection{\texttt{friends}}
+\codefig{friends}{\assignment}{20}{21}{The \texttt{friends} implementation.}
+
+\texttt{friends} will use \texttt{rpc} to send a request to $P$ via RPC. $P$
+respond with its friend list which \texttt{friends} will then return. Figure
+\ref{code:friends} shows the implementation of the function.
+
+\subsection{\texttt{broadcast}}
+
+Figure \ref{code:broadcast} shows our implementation of the
+\texttt{broadcast} function. Since \texttt{broadcast} do not wait for a
+response, we didn not use the \texttt{rpc} function and chose instead to send
+the message directly. As hinted by the assignment we tag each broad cast with a
+unique reference number, identifying messages among each other.
+
+\codefig{broadcast}{\assignment}{23}{24}{The \texttt{broadcast} implementation.}
+
+\subsection{\texttt{recieved\_messages}}
+\codefig{recievedmessages}{\assignment}{26}{27}{The \texttt{recieved\_messages}
+  implementation.}
+
+Figure \ref{code:recievedmessages} show the implementation of
+\texttt{recieved\_messages}, it uses \texttt{rpc} to send a request to a process
+and then returns the response.
