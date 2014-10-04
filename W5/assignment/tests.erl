@@ -2,9 +2,7 @@
 % tests.erl
 %
 
-%-import(facein, [start/1,add_friend/2,friends/1,broadcast/3,received_messages/1]).
-
-% please note, this list is sorted xD
+% start-up person processes
 Andrzej = facein:start(andrzej).
 Jen = facein:start(jen).
 Jessica = facein:start(jessica).
@@ -13,6 +11,7 @@ Reed = facein:start(reed).
 Susan = facein:start(susan).
 Tony = facein:start(tony).
 
+% construct network graph
 facein:add_friend(Andrzej, Ken).
 facein:add_friend(Andrzej, Susan).
 
@@ -32,8 +31,14 @@ facein:add_friend(Susan, Jen).
 facein:add_friend(Susan, Jessica).
 facein:add_friend(Susan, Reed).
 
+% friend list tests
+io:format("Andrzej's friends:~n~w~n", [facein:friends(Andrzej)]).
 io:format("Jen's friends:~n~w~n", [facein:friends(Jen)]).
+io:format("Jessica's friends:~n~w~n", [facein:friends(Jessica)]).
+io:format("Ken's friends:~n~w~n", [facein:friends(Ken)]).
+io:format("Reed's friends:~n~w~n", [facein:friends(Reed)]).
 io:format("Susan's friends:~n~w~n", [facein:friends(Susan)]).
 io:format("Tony's friends:~n~w~n", [facein:friends(Tony)]).
 
-facein:broadcast(Jessica, "Hello!", 1).
+facein:broadcast(Reed, "Hello!", 1).
+
