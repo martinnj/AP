@@ -4,7 +4,7 @@
 %
 
 -module(facein).
--export([start/1,loop/1,add_friend/2,friends/1,broadcast/3,received_messages/1]).
+-export([start/1,add_friend/2,friends/1,broadcast/3,received_messages/1]).
 
 start(N) -> spawn(fun() -> loop({N,[],[]}) end).
 
@@ -34,7 +34,7 @@ pass_msg(UID, FS, P, M, R) ->
     end.
 
 loop({N, L, MSG}) ->
-    io:format('Person: ~w~nFriends: ~w~nMessages: ~w~n', [N, L, MSG]),
+    %io:format('Person: ~w~nFriends: ~w~nMessages: ~w~n', [N, L, MSG]),
     receive
         % b) adds a friend
         {From, {add, P}} ->
@@ -44,7 +44,7 @@ loop({N, L, MSG}) ->
                 {P, {error, Reason}}    -> From ! {self(), {error, Reason}}
             end,
             loop({N, L, MSG});
-        
+
         {From, {name, F}} ->
             case lists:member({F, From}, L) of
                 true    -> From ! {self(), {error, 'Already on friend list'}},
@@ -52,12 +52,12 @@ loop({N, L, MSG}) ->
                 false   -> From ! {self(), ok},
                            loop({N, [{F, From}|L], MSG})
             end;
-        
+
         % c) retrives the friend list
         {From, friends} ->
             From ! {self(), L},
             loop({N, L, MSG});
-        
+
         % d) broadcast a message M from person P within radius R
         {_, {broadcast, UID, P, M, 0}} ->
             self() ! {P, {message, UID, M}},
@@ -69,24 +69,23 @@ loop({N, L, MSG}) ->
                 L   -> pass_msg(UID, L, P, M, R-1),
                        loop({N, L, MSG})
             end;
-            
-        
+
+
         % adds a message, if it's not already added
         {From, {message, UID, M}} ->
             case lists:member({UID, From, M}, MSG) of
                 true  -> loop({N, L, MSG});
                 false -> loop({N, L, [{UID, From, M}|MSG]})
             end;
-        
+
         % e) retrieves the received messages
         {From, messages} ->
             Messages = lists:map ( fun({_, F, M}) -> {F, M} end, MSG),
             From ! {self(), Messages},
             loop({N, L, MSG});
-             
+
         % handle any other occurrences
         {From, Other} ->
             From ! {self(), {error, Other}},
             loop({N, L, MSG})
     end.
-
