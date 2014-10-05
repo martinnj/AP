@@ -62,4 +62,15 @@ the call, and so the terminates on the base case of $R=0$.
 in list $FS$}
 
 \subsection{Retrieving messages}
+Upon receiving the \code{messages} signal we filter out the unique identifier
+associated with the messages in \code{MSG} on line 82, using the built-in
+\code{lists:map} function, taking an anonymous function that simply builds a
+list of tuples containing the sender and message, instead of the triple which
+contains the UID as well.
+
+\codefig{messages}{\assignment}{80}{84}{Retreives the messages}
+
+The rule then responds to the calling thread with this filtered list on line
+83, and simply continues the loop execution.
+
 \subsection{Invalid message}
