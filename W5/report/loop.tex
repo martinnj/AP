@@ -74,3 +74,11 @@ The rule then responds to the calling thread with this filtered list on line
 83, and simply continues the loop execution.
 
 \subsection{Invalid message}
+Any message we do not have an explicit handler for is treated as an error, and
+is simply propagated backward to the request with an error token and what the
+message contains. Such occurrences do not stop the process, however, as we
+simply ignore it, and continue executing the loop on line 89.
+
+\codefig{invalid-msg}{\assignment}{86}{89}{Invalid message handling}
+
+
