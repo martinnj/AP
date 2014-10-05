@@ -5,40 +5,61 @@ consult the \textit{facein.erl} file or see Figure \ref{code:fullloop}.
 
 \texttt{loop} takes a triple as argument, the triple contains the name of the
 person, the list of their friends and a list of messages the person have
-recieved. The loop will wait to recieve a message and then depending on pattern
-matching will performs actions as descriped in the following subsections.
+recieved. The loop will wait to recieve a message and then depending on
+pattern matching will performs actions as descriped in the following
+subsections.
 
 \subsection{Adding friends}
 Adding a friends is a 2 step process, as descriped in \texttt{add\_friend} the
 person we want to add ($F$) to a friendslist ($P$s friendlist), recieves a
 message with a pattern as shown in \ref{code:add}.
 
-\codefig{add}{\assignment}{39}{46}{The pattern that catches the first step of a
-  friend request.}
+\codefig{add}{\assignment}{39}{46}{The pattern that catches the first step of
+a friend request.}
 
-When the process recieves the proper message it will send a message to $P$ with
-it's own PID and name and then await a reply from $P$. The reply will the be
-forwarded back to the caller. In the end it will call itself (\texttt{loop})
-with it's own name, friends and messages.
+When the process recieves the proper message it will send a message to $P$
+with its own PID and name and then await a reply from $P$. The reply will the
+be forwarded back to the caller. In the end it will call itself
+(\texttt{loop}) with it's own name, friends and messages.
 
 \codefig{name}{\assignment}{48}{54}{Adding a friend to a friendlist and
-  responding.}
+responding.}
 
 The second step is in $P$ which matches a message with the pattern shown in
 Figure \ref{code:name} it will check if $F$ is already on $P$'s friendlist, if
-it is it will send an error back, otherwise it will send an \texttt{ok} back and
-then call \texttt{loop} with it's name, it's friendlist with $F$ appended and
-the message list.
+it is it will send an error back, otherwise it will send an \texttt{ok} back
+and then call \texttt{loop} with it's name, it's friendlist with $F$ appended
+and the message list.
 
 \subsection{Retrieving friends}
 
-\codefig{friends}{\assignment}{56}{59}{Retrieving the friendlist and sending it
-  back.}
+\codefig{friends}{\assignment}{56}{59}{Retrieving the friendlist and sending
+it back.}
 
 When a message matches the pattern seen in Figure \ref{code:friends} it will
 respond with a message containing it's ID a friend list before it restarts the
 \texttt{loop} method with the same arguments.
 
 \subsection{Broadcasting a message}
+The implementation of broadcasting out a message from $P$ to all friends
+within radius $R$ must be non-blocking. Therefore, we do not wait for it to
+receive any feedback from the message passing on lines 63 and 66. Our solution
+is based on decrementing the radius $R$ as we propagate the message out to all
+immediate friends, using \code{pass\_msg} (see figure \ref{code:pass_msg}) and
+then recurse with a decremented radius.
+
+\codefig{rcv-broadcast}{\assignment}{61}{71}{Receiving broadcasts}
+
+As evident of the code above in figure \ref{code:rcv-broadcast}, we have the
+zero radius base case on lines 62--64 upon which we simply message ourselves,
+as was required by the assignment text. If it is the case that $R > 0$ then we
+message ourselves and \code{pass\_msg} is called with a decremented radius.
+This rule recurses on the given friendlist $FS$, sending out the broadcast
+signal for each one. Note at this time the radius has been decremented before
+the call, and so the terminates on the base case of $R=0$.
+
+\codefig{pass_msg}{\assignment}{29}{34}{Propagates the received message to all
+in list $FS$}
+
 \subsection{Retrieving messages}
 \subsection{Invalid message}
