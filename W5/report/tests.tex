@@ -46,99 +46,13 @@ highlight a few representative examples.
 \codefig{test-rumour}{\tests}{43}{67}{A rumour spreads throughout graph $G$}
 
 When we print out the resulting inboxes (see figure \ref{code:test-messages})
-we see that notibly no one gets Tony's message, even though its radius is very
-high. This shows that the broadcasting mechanism does indeed require the
-message to travel along the directed edges of the graph, as opposed to the
-outcry of Ken, which does propagate throughout the entire graph. Similarly,
-when Susan {\it whispers} to herself ($R=0$) she does get her own message.
+we see that notibly no one gets Tony's message but himself, as evident of the
+output shown below (see \ref{test:broadcast-2} line 77), even though its
+radius is very high. This shows that the broadcasting mechanism does indeed
+require the message to travel along the directed edges of the graph, as
+opposed to the outcry of Ken, which does propagate throughout the entire
+graph. Similarly, when Susan {\it whispers} to herself ($R=0$) she does get
+her own message.
 
 \codefig{test-messages}{\tests}{69}{75}{Prints every person's inbox}
 
-
-\subsection{Test output}
-\begin{verbatim}
-Erlang/OTP 17 [erts-6.2] [source] [64-bit] [smp:4:4] [async-threads:10] [hipe] [kernel-poll:false]
-
-Eshell V6.2  (abort with ^G)
-1> file:eval('tests.erl').
-Andrzej's friends: [{susan,<0.41.0>},{ken,<0.39.0>}]
-Jen's friends: [{tony,<0.42.0>},{susan,<0.41.0>},{jessica,<0.38.0>}]
-Jessica's friends: [{jen,<0.37.0>}]
-Ken's friends: [{andrzej,<0.36.0>}]
-Reed's friends: [{tony,<0.42.0>},{jessica,<0.38.0>}]
-Susan's friends: [{reed,<0.40.0>},{jessica,<0.38.0>},{jen,<0.37.0>},{andrzej,<0.36.0>}]
-Tony's friends: []
-Andrzej's messages:
-[{<0.36.0>,"Yeah!"},
- {<0.39.0>,"Really?"},
- {<0.36.0>,"I heard Susan has cheated!"},
- {<0.37.0>,"Yeah, Susan cheated!"},
- {<0.39.0>,"People of graph G! I have said no such thing!"},
- {<0.36.0>,"Rumour has it you're giving them an A at the exam."},
- {<0.39.0>,"What?"},
- {<0.36.0>,"Oh, man..."},
- {<0.41.0>,
-  "I heard Martin and Casper are getting an A for the\nexam, even though it's not even released yet!"},
- {<0.39.0>,
-  "Oh, maybe. But I meant for this assignment. It's good really good!"},
- {<0.36.0>,
-  "Really? Do you think Martin and Casper should get\nan A for the exam?"},
- {<0.39.0>,"Martin and Casper will probably get an A."}]
-Jen's messages:
-[{<0.37.0>,"Yeah, Susan cheated!"},
- {<0.38.0>,"Susan is a liar..."},
- {<0.39.0>,"People of graph G! I have said no such thing!"},
- {<0.38.0>,"That's cheating!"},
- {<0.37.0>,"Say what!?"},
- {<0.41.0>,
-  "I heard Martin and Casper are getting an A for the\nexam, even though it's not even released yet!"}]
-Jessica's messages:
-[{<0.37.0>,"Yeah, Susan cheated!"},
- {<0.39.0>,"People of graph G! I have said no such thing!"},
- {<0.38.0>,"Susan is a liar..."},
- {<0.40.0>,"Are you kidding me?!"},
- {<0.38.0>,"That's cheating!"},
- {<0.37.0>,"Say what!?"},
- {<0.41.0>,
-  "I heard Martin and Casper are getting an A for the\nexam, even though it's not even released yet!"}]
-Ken's messages:
-[{<0.36.0>,"Yeah!"},
- {<0.39.0>,"Really?"},
- {<0.36.0>,"I heard Susan has cheated!"},
- {<0.39.0>,"People of graph G! I have said no such thing!"},
- {<0.36.0>,"Rumour has it you're giving them an A at the exam."},
- {<0.39.0>,"What?"},
- {<0.36.0>,"Oh, man..."},
- {<0.39.0>,
-  "Oh, maybe. But I meant for this assignment. It's good really good!"},
- {<0.36.0>,
-  "Really? Do you think Martin and Casper should get\nan A for the exam?"},
- {<0.39.0>,"Martin and Casper will probably get an A."}]
-Reed's messages:
-[{<0.37.0>,"Yeah, Susan cheated!"},
- {<0.39.0>,"People of graph G! I have said no such thing!"},
- {<0.40.0>,"Are you kidding me?!"},
- {<0.41.0>,
-  "I heard Martin and Casper are getting an A for the\nexam, even though it's not even released yet!"}]
-Susan's messages:
-[{<0.41.0>,"Aw man... :("},
- {<0.36.0>,"Yeah!"},
- {<0.36.0>,"I heard Susan has cheated!"},
- {<0.37.0>,"Yeah, Susan cheated!"},
- {<0.39.0>,"People of graph G! I have said no such thing!"},
- {<0.36.0>,"Rumour has it you're giving them an A at the exam."},
- {<0.36.0>,"Oh, man..."},
- {<0.37.0>,"Say what!?"},
- {<0.41.0>,
-  "I heard Martin and Casper are getting an A for the\nexam, even though it's not even released yet!"},
- {<0.36.0>,
-  "Really? Do you think Martin and Casper should get\nan A for the exam?"}]
-Tony's messages:[{<0.42.0>,"Meh, I don't give a damn. Leave me be!"},
-                 {<0.37.0>,"Yeah, Susan cheated!"},
-                 {<0.39.0>,"People of graph G! I have said no such thing!"},
-                 {<0.40.0>,"Are you kidding me?!"},
-                 {<0.37.0>,"Say what!?"}]
-ok
-2>
-
-\end{verbatim}
