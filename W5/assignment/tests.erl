@@ -62,7 +62,7 @@ facein:broadcast(Jen, "Yeah, Susan cheated!", 2).
 facein:broadcast(Andrzej, "I heard Susan has cheated!", 1).
 facein:broadcast(Ken, "Really?", 1).
 facein:broadcast(Andrzej, "Yeah!", 1).
-facein:broadcast(Susan, "Aw man... :(", 1).
+facein:broadcast(Susan, "Aw man... :(", 0).
 
 facein:broadcast(Tony, "Meh, I don't give a damn. Leave me be!", 10).
 

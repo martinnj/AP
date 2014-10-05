@@ -70,7 +70,6 @@ loop({N, L, MSG}) ->
                        loop({N, L, MSG})
             end;
 
-
         % adds a message, if it's not already added
         {From, {message, UID, M}} ->
             case lists:member({UID, From, M}, MSG) of
