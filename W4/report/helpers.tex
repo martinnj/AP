@@ -22,11 +22,25 @@ The \code{friendCheck} rule returns true iff. $\forall y \in L ( y \in F(x)
 \label{appendix:transitive}
 The \code{transitive} rule returns true iff. there is a transitive
 relationship between $A$ and $C$, recursively.
-\codefig{transitive}{\assignment}{47}{50}{The implementation of
+\codefig{transitive}{\assignment}{53}{58}{The implementation of
 \code{transitive}}
+
+\subsection{Wannabe}
+\label{appendix:is_wannabe}
+The \code{is\_wannabe} rule recurses on a duplicate of graph $G$ and checks
+for transitive relationship from $X$ to all $Y \in G$.
+\codefig{is_wannabe}{\assignment}{60}{64}{The implementation of
+\code{is\_wannabe}}
+
+\subsection{Idol}
+\label{appendix:is_idol}
+The \code{is\_idol} rule recurses on a duplicate of graph $G$ and checks
+for transitive relationship from all $Y \in G$ to $X$.
+\codefig{is_idol}{\assignment}{69}{73}{The implementation of
+\code{is\_idol}}
 
 \subsection{Directional Relationships}
 \label{appendix:drel}
 The \code{drel} rule returns true iff. $( D = \text{'->'} \land A \in F(B) )
 \lor ( D = \text{'<-'} \land B \in F(B) )$.
-\codefig{drel}{\assignment}{69}{74}{The implementation of \code{drel}}
+\codefig{drel}{\assignment}{78}{83}{The implementation of \code{drel}}
