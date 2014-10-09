@@ -1,0 +1,58 @@
+\section{Testing}
+
+\subsection{Starting processes}
+In testing \code{start} function, we are expecting the Erlang shell to reply
+simply \code{ok}, indicating that nothing went wrong.
+
+\codefig{test-start}{\tests}{5}{12}{Starting up all person processes in the
+graph $G$}
+
+Running \code{c(facein), file:eval('tests.erl')} on {\it only} the above
+section of the test code we get just that; \code{ok}.
+
+\subsection{Constructing the graph}
+Now that we have all person processes running, we can construct the network
+graph $G$.
+
+\codefig{test-graph}{\tests}{14}{32}{Construction of the network graph $G$}
+
+We do so by using the \code{facein:add\_friend} API (see section
+\ref{api:add_friend}). Yet again, including the code from
+\ref{code:test-start} in conjunction with the above, we are expecting to see
+just \code{ok} --- and we do.
+
+\subsection{Friend lists}
+With a fully constructed network graph $G$, we can now begin testing for some
+meaningful output. The test code below queries every person process in the
+graph $G$ for their friendlists, respectively, and formats the response using
+the built-in \code{io:format} API.
+
+\codefig{test-friendlists}{\tests}{34}{41}{Querying the friendlist of person
+processes}
+
+We are expecting to see an output of a person name followed by the person's
+friendlist. And this is indeed what we get.
+\codefig{friendlist-output}{friendlist.txt}{1}{7}{Output of running the code
+from figure \ref{code:test-friendlists}}
+
+\subsection{Broadcasting}
+In order to test the broadcasting system we wanted to depict a situation that
+allows us to show several different radii. For this, we created a rumour in
+graph $G$. The code of figure \ref{code:test-rumour} broadcasts several
+messages and at many different radii, such we end up with a very diverse
+inbox environment. Instead of verifying each an every message we will
+highlight a few representative examples.
+
+\codefig{test-rumour}{\tests}{43}{67}{A rumour spreads throughout graph $G$}
+
+When we print out the resulting inboxes (see figure \ref{code:test-messages})
+we see that notibly no one gets Tony's message but himself, as evident of the
+output shown below (see \ref{test:broadcast-2} line 77), even though its
+radius is very high. This shows that the broadcasting mechanism does indeed
+require the message to travel along the directed edges of the graph, as
+opposed to the outcry of Ken, which does propagate throughout the entire
+graph. Similarly, when Susan {\it whispers} to herself ($R=0$) she does get
+her own message.
+
+\codefig{test-messages}{\tests}{69}{75}{Prints every person's inbox}
+
