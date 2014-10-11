@@ -32,7 +32,7 @@
 \newcommand{\code}[1]{{\tt #1}}
 \newcommand{\file}[1]{{\tt #1}}
 
-\newcommand{\assignment}{../assignment/facein.erl}
+\newcommand{\assignment}{../assignment/mr.erl}
 \newcommand{\tests}{../assignment/tests.erl}
 
 % usage: \codefig{label}{file}{firstline}{lastline}{description}
@@ -71,7 +71,7 @@
 
 \title
 {
-    {\Large Weekly Assignment 4} \\
+    {\Large Weekly Assignment 5} \\
     Advanced Programming 2014 @ DIKU
 }
 
@@ -96,9 +96,12 @@
 \thispagestyle{empty}
 \begin{multicols}{2}
     \begin{abstract}
-        For this assignment we are to write a person server in Erlang that
-        implements a certain API for manipulating and interacting with other
-        persons in a networked graph.
+        For this assignment we implement a so-called map-reduce framework,
+        which is a technique used to distribute the workload over a number of
+        running threads. Each thread processes a bit of the input in the
+        mapper-threads whilst the reducer-thread waits and collects the
+        processed output. Upon receiving all of the mapper output data, the
+        reducer then reduces this into a single output.
     \end{abstract}
     \vfill{\ }\columnbreak
     \tableofcontents
