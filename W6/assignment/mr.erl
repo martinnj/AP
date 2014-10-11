@@ -15,7 +15,7 @@ start(N) ->
     {ok, spawn(fun() -> coordinator_loop(Reducer, Mappers) end)}.
 
 
-stop(Pid) -> Pid ! {self(), stop}. % should probably handle errors
+stop(Pid) -> Pid ! {self(), stop}.
 
 job(CPid, MapFun, RedFun, RedInit, Data) ->
     rpc(CPid, {job, MapFun, RedFun, RedInit, Data}).
@@ -32,7 +32,7 @@ init_mappers(L, R, N) ->
     
 
 init(N) ->
-    ReducerPid = spawn(fun() -> reducer_loop(-1, N, fun(X, Acc) -> X+Acc end, 0) end),
+    ReducerPid = spawn(fun() -> reducer_loop() end),
     MapperPids = init_mappers([], ReducerPid, N),
     {ReducerPid, MapperPids}.
 
@@ -70,15 +70,17 @@ coordinator_loop(Reducer, Mappers) ->
 
     {From, {job, MapFun, RedFun, RedInit, Data}} ->
         io:format("starting job~n"),
-        Reducer ! {self(), state, {length(Data), RedFun, RedInit}},
         send_func(Mappers, MapFun),
         send_data(Mappers, Data),
-        receive
-            {Reducer, ok, Result} -> reply_ok(From, Result)
-        end;
+        case rpc(Reducer, {job, {RedFun, RedInit, length(Data)}}) of
+            {ok, Result} -> reply_ok(From, Result),
+                            io:format("Result: ~p~n", [Result]);
+            {error, Reason} -> From ! {error, Reason} % unused
+        end,
+        coordinator_loop(Reducer, Mappers);
 
 	Unknown ->
-	    io:format("[COORDINATOR] unknown message: ~p~n",[Unknown]), 
+	    io:format("unknown message in ~p: ~p~n",[self(),Unknown]), 
         coordinator_loop(Reducer, Mappers)
     end.
 
@@ -105,35 +107,33 @@ send_loop(Mappers, [], Data) ->
 
 %%% Reducer
 
-reducer_loop(Parent, N, Fun, Init) -> % N and Fun added
+reducer_loop() ->
     receive
 	stop -> 
 	    io:format("Reducer ~p stopping~n", [self()]),
 	    ok;
-	
-	{From, state, {M, Func, Initial}} ->
-        reducer_loop(From, M, Func, Initial);
     
-    {_, data, Data} ->
-        Acc = spawn(gather_data_from_mappers(Fun, Init, N-1)),
-        Result = Fun(Data, Acc),
-        reply_ok(Parent, Result),
-        reducer_loop(Parent, N, Fun, Init);
-
+    {From, {job, {Fun, Init, Missing}}} ->
+        % pass control of thread to gather_data_from_mappers
+        reply_ok(From, gather_data_from_mappers(Fun, Init, Missing)),
+        reducer_loop();
+    
 	Unknown ->
-	    io:format("[REDUCER] unknown message: ~p~n",[Unknown]), 
-        reducer_loop(Parent, N, Fun, Init)
+	    io:format("unknown message in ~p: ~p~n",[self(),Unknown]), 
+        reducer_loop()
     
     end.
 
 gather_data_from_mappers(Fun, Acc, Missing) ->
     receive
-    {_, data, Data} ->
-        Acc2 = Fun(Data, Acc),
-        Result = gather_data_from_mappers(Fun, Acc2, Missing-1)
+        {_, data, Data} ->
+            Acc2 = Fun(Data, Acc)
     end,
-    io:format("received data"),
-    Result.
+    
+    case (Missing > 1) of
+        true  -> gather_data_from_mappers(Fun, Acc2, Missing - 1);
+        false -> Acc2
+    end.
 
 
 %%% Mapper
@@ -145,14 +145,13 @@ mapper_loop(Reducer, Fun, Data) -> % Data added
 	    ok;
     
     {data, Datum} ->
-        Result = Fun(Datum),
-        Reducer ! {self(), data, Result},
+        Reducer ! {self(), data, Fun(Datum)},
         mapper_loop(Reducer, Fun, Datum);
 	
 	{_, func, Func} ->
         mapper_loop(Reducer, Func, Data);
 
 	Unknown ->
-	    io:format("[MAPPER] unknown message: ~p~n",[Unknown]), 
+	    io:format("unknown message in ~p: ~p~n",[self(),Unknown]), 
 	    mapper_loop(Reducer, Fun, Data)
     end.
