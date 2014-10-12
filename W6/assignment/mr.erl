@@ -26,7 +26,7 @@ job(CPid, MapFun, RedFun, RedInit, Data) ->
 init_mappers(L, R, N) ->
     case N of
         0 -> L;
-        M -> MapperPid = spawn(fun() -> mapper_loop(R, fun(x) -> x end, []) end),
+        M -> MapperPid = spawn(fun() -> mapper_loop(R, fun(x) -> x end) end),
              init_mappers([MapperPid | L], R, M-1)
     end.
     
@@ -137,20 +137,20 @@ gather_data_from_mappers(Fun, Acc, Missing) ->
 
 %%% Mapper
 
-mapper_loop(Reducer, Fun, Data) -> % Data added
+mapper_loop(Reducer, Fun) ->
     receive
 	stop -> 
 	    io:format("Mapper ~p stopping~n", [self()]),
 	    ok;
     
-    {data, Datum} ->
-        Reducer ! {self(), data, Fun(Datum)},
-        mapper_loop(Reducer, Fun, Datum);
+    {data, Data} ->
+        Reducer ! {self(), data, Fun(Data)},
+        mapper_loop(Reducer, Fun);
 	
 	{_, func, Func} ->
-        mapper_loop(Reducer, Func, Data);
+        mapper_loop(Reducer, Func);
 
 	Unknown ->
 	    io:format("unknown message in ~p: ~p~n",[self(),Unknown]), 
-	    mapper_loop(Reducer, Fun, Data)
+	    mapper_loop(Reducer, Fun)
     end.
