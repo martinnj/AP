@@ -58,10 +58,14 @@ list.
 
 The reducer simply appends the lists from the mappers and returns the result.
 
-\subsection{Task 4+5}
-We did not complete task 4, but did write a short discussion on the theory:
+\subsection{Task 4}
+We tried to implement a \texttt{dict} in \textit{../assignment/revindex.erl} seen in Figure \ref{code:dict}.
 
+\codefig{dict}{../assignment/tests.erl}{74}{88}{Code that constructs a dictionary using our map reduce framework.}
 
+As can be seen on the figure the code is out-commented. Since the running time was several hours for constructing the entire index.
+
+\subsection{Task 5}
 While the preliminary initialization of the reverse index dictionary might
 exceed the algorithmic complexity of the \code{grep} method, look-ups using
 the reverse indexing method allows us to retreive data in constant time once
