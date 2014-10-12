@@ -73,8 +73,7 @@ coordinator_loop(Reducer, Mappers) ->
         send_func(Mappers, MapFun),
         send_data(Mappers, Data),
         case rpc(Reducer, {job, {RedFun, RedInit, length(Data)}}) of
-            {ok, Result} -> reply_ok(From, Result),
-                            io:format("Result: ~p~n", [Result]);
+            {ok, Result} -> reply_ok(From, Result);
             {error, Reason} -> From ! {error, Reason} % unused
         end,
         coordinator_loop(Reducer, Mappers);
