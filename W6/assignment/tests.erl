@@ -47,7 +47,7 @@ io:format("Number of words in all songs: ~p~n", [NoOfWords]).
 
 % Calculate the average number of different words, and the average number of words in total,
 % per song.
-{ok, {AvgDiff, AvgTotal}} = mr:job(MR,
+{ok, {AvgDiff, AvgTotal, _}} = mr:job(MR,
                                    fun(Track) ->
                                        {_, _, WL} = read_mxm:parse_track(Track),
                                        DiffWords = length(WL),
@@ -56,12 +56,15 @@ io:format("Number of words in all songs: ~p~n", [NoOfWords]).
                                        {DiffWords, WordCount, 0}
                                    end,
                                    fun({Diff, Total, _},{Acc1, Acc2, N}) ->
-                                           (1/N) *
-                                           (A/1 * (B/2) * C)
-
-                                           (A + B + C)
+                                       %--New average = old average * (n-1)/n + new value /n
+                                       NAv = Acc1 * (N-1)/N + Diff/N,
+                                       NTa = Acc2 * (N-1)/N + Total/N,
+                                       {NAv, NTa, N + 1}
                                    end,
-                                   {1/N,1/N},
+                                   {0,0,1},
                                    Tracks).
+io:format("Average number of different words per song: ~p~n", [AvgDiff]).
+io:format("Average number of words per song: ~p~n", [AvgTotal]).
+
 
 mr:stop(MR).

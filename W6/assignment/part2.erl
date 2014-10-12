@@ -3,7 +3,7 @@
 %        and Casper B Hansen, xxxyyy
 
 -module(part2).
--export([lsum/2]).
+-export([lsum/2, resprint/2]).
 
 
 lsum([]   , Sum) -> Sum;
