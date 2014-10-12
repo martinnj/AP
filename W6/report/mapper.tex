@@ -1,0 +1,7 @@
+\subsection{Mapper}
+As described, initialization of the mapper threads happens as a consequence of
+the coordinator sending out a mapper function. Upon receiving this function
+(line 150), we simply restart the loop substituting the old function with this
+newly supplied function on line 151.
+
+\codefig{mapper}{\assignment}{140}{156}{Mapper loop}
