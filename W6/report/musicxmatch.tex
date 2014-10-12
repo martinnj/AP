@@ -1,0 +1,69 @@
+\section{MusicXMatch}
+
+The second part of the assignment was usage of our mapreduce framework to
+collect statistics and search through the Million Sond Dataset.  For our tests
+we used the small dataset (\textit{data/mxm\_dataset\_test.txt}) in order to
+speed up test times, and spare our puny laptops.
+
+\subsection{Task 1}
+The first task was to compute the total number of words in all the songs
+together. For this task we do a little preprocessing, we take seperate the
+wordlist and the list of tracks. See Figure \ref{code:preproc}.
+
+\codefig{preproc}{../assignment/tests.erl}{27}{31}{Parsing the dataset file into
+  a list of words, and a list fo tracks.}
+
+The mapper function will then use the track parsing function from
+\texttt{read\_mxm} to get the list of words used in the track and sums their
+occurence counters. Thus sum is then sent to the reducer.
+
+The reducer function is simply the sum function from the testing examples
+given. The calls for the test can be seen in Figure \ref{code:mxm1}.
+
+\codefig{mxm1}{../assignment/tests.erl}{31}{40}{Using our map reduce
+  framework to count the total number of words in all the songs..}
+
+\subsection{Task 2}
+Our code for calculating the avergage number of different words per song, and
+the average numer of words per song can be seen in Figure \ref{code:mxm2}.
+
+\codefig{mxm2}{../assignment/tests.erl}{44}{61}{MR job for solving the task.}
+
+The mapping function will return the number of different words used in a single
+track along with the number of words used totally. It also returns a $0$ in
+order to allow for a counter to be implemented in the reducer.
+
+The reducer calculates the running average of both numbers returned by the
+mappers and increase the counter as it goes along.
+
+\subsection{Task 3}
+For testing our \texttt{grep} function we created two cases, one that should
+return nothing at all and one that returns a few ID's. They can be seen in
+Figure \ref{fig:mxm3}.
+
+\codefig{mxm3}{../assignment/tests.erl}{65}{72}{Our two tests of \texttt{grep}.}
+
+\texttt{grep} is implemented as Seen in Figure \ref{code:grep}.
+
+\codefig{grep}{../assignment/part2.erl}{19}{40}{Our \texttt{grep}
+  implementation.}
+
+
+\codefig{inwords}{../assignment/part2.erl}{12}{15}{Helper function for
+  \texttt{grep}.}
+
+The mapper function checks if the specified word is in the list of words used in
+a single track and returns the ID's of the songs, otherwise it returns an empty
+list.
+
+The reducer simply appends the lists from the mappers and returns the result.
+
+\subsection{Task 4+5}
+We did not complete task 4, but did write a short discussion on the theory:
+
+
+While the preliminary initialization of the reverse index dictionary might
+exceed the algorithmic complexity of the \code{grep} method, look-ups using
+the reverse indexing method allows us to retreive data in constant time once
+this has been built. Conversely, \code{grep} has a linear time complexity at
+all times.
