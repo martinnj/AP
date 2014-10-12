@@ -12,7 +12,6 @@
 
 start(N) ->
     {Reducer, Mappers} = init(N),
-    %io:format("Spawning coordinator.~n"),
     {ok, spawn(fun() -> coordinator_loop(Reducer, Mappers) end)}.
 
 
@@ -62,7 +61,6 @@ data_async(Pid, D) -> async(Pid, {data, D}).
 %%% Coordinator
 
 coordinator_loop(Reducer, Mappers) ->
-    %io:format("Cooridnator looooooop: ~p~n", [make_ref()]),
     receive
 	{From, stop} ->
 	    io:format("~p stopping~n", [self()]),
@@ -79,10 +77,6 @@ coordinator_loop(Reducer, Mappers) ->
                 {Reducer,{ok, Result}} -> reply_ok(From, Result);
                 {Reducer,{error, Reason}} -> From ! {error, Reason} % unused
             end,
-        %case rpc(Reducer, {gather, {RedFun, RedInit, length(Data)}}) of
-        %    {ok, Result} -> reply_ok(From, Result);
-        %    {error, Reason} -> From ! {error, Reason} % unused
-        %end,
             coordinator_loop(Reducer, Mappers);
 
 	Unknown ->
@@ -120,8 +114,6 @@ reducer_loop() ->
 	    ok;
     
     {From, {gather, {Fun, Init, Missing}}} ->
-        % pass control of thread to gather_data_from_mappers
-        %io:format("~p~n", [Missing]),
         reply_ok(From, gather_data_from_mappers(Fun, Init, Missing)),
         reducer_loop();
     
@@ -133,7 +125,6 @@ reducer_loop() ->
 gather_data_from_mappers(Fun, Acc, Missing) ->
     receive
         {_, data, Data} ->
-            %io:format("~p~n", [Missing]),
             Acc2 = Fun(Data, Acc)
     end,
     
