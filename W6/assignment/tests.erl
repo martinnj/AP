@@ -23,13 +23,17 @@ io:format("Fact: ~p~n", [Fact]).
 
 %%% Part 2 tests start here.
 
-{Words, Tracks} = read_mxm:from_file('data/mxm_dataset_test.txt').
+% Read track data.
+{Words, Tracks} = read_mxm:from_file('data/mxm_dataset_test.txt'). % Little dataset (~27K songs)
+%{Words, Tracks} = read_mxm:from_file('data/mxm_dataset_train.txt'). % Big ass dataset.
+
 % Words is a list of strings.
 % Tracks is a list of binaries.
 %TRK = hd(Tracks).
 %{V1, V2, V3} = read_mxm:parse_track(TRK).
 %R = part2:t1mapfunc(TRK).
 
+% Count the total number of words in all the songs.
 {ok, NoOfWords} = mr:job(MR,
                          fun(Track) ->
                                  {_, _, WL} = read_mxm:parse_track(Track),
@@ -41,15 +45,23 @@ io:format("Fact: ~p~n", [Fact]).
 
 io:format("Number of words in all songs: ~p~n", [NoOfWords]).
 
-
+% Calculate the average number of different words, and the average number of words in total,
+% per song.
 {ok, {AvgDiff, AvgTotal}} = mr:job(MR,
                                    fun(Track) ->
-                                           %lol
+                                       {_, _, WL} = read_mxm:parse_track(Track),
+                                       DiffWords = length(WL),
+                                       Counts = lists:map(fun ({_, C}) -> C end,WL),
+                                       WordCount = part2:lsum(Counts,0),
+                                       {DiffWords, WordCount, 0}
                                    end,
-                                   fun({Diff, Total},{Acc1, Acc2}) ->
-                                           %lol
+                                   fun({Diff, Total, _},{Acc1, Acc2, N}) ->
+                                           (1/N) *
+                                           (A/1 * (B/2) * C)
+
+                                           (A + B + C)
                                    end,
-                                   {0,0},
-                                   Trakcs).
+                                   {1/N,1/N},
+                                   Tracks).
 
 mr:stop(MR).
