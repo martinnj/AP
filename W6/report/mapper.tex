@@ -1,0 +1,10 @@
+\subsection{Mapper}
+As described, initialization of the mapper threads happens as a consequence of
+the coordinator sending out a mapper function (see section \ref{coordinator}).
+Upon receiving this function (lines 150--151), we simply restart the loop
+substituting the old function with this newly supplied function.
+
+\codefig{mapper}{\assignment}{140}{156}{Mapper loop}
+
+Upon receiving data (line 146), we send the processed data segment to the
+reducer on line 147, and then wait for further instructions on line 148.

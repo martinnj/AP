@@ -11,6 +11,7 @@
 \usepackage{color}
 \usepackage{mdwlist}
 \usepackage{multicol}
+\usepackage{verbatim}
 %\setcounter{secnumdepth}{1}
 %\setcounter{tocdepth}{3}
 \usepackage{todonotes}
@@ -95,7 +96,9 @@
 \thispagestyle{empty}
 \begin{multicols}{2}
     \begin{abstract}
-        ...
+        For this assignment we are to write a person server in Erlang that
+        implements a certain API for manipulating and interacting with other
+        persons in a networked graph.
     \end{abstract}
     \vfill{\ }\columnbreak
     \tableofcontents
@@ -107,7 +110,6 @@
 \input{tests}
 
 \appendix
-\input{loopimp}
-%\input{tests}
+\input{appendix}
 
 \end{document}

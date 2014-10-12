@@ -1,0 +1,7 @@
+Andrzej's friends: [{susan,<0.71.0>},{ken,<0.69.0>}]
+Jen's friends: [{tony,<0.72.0>},{susan,<0.71.0>},{jessica,<0.68.0>}]
+Jessica's friends: [{jen,<0.67.0>}]
+Ken's friends: [{andrzej,<0.66.0>}]
+Reed's friends: [{tony,<0.72.0>},{jessica,<0.68.0>}]
+Susan's friends: [{reed,<0.70.0>},{jessica,<0.68.0>},{jen,<0.67.0>},{andrzej,<0.66.0>}]
+Tony's friends: []

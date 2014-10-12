@@ -47,25 +47,33 @@ friend(G, A, B) :-
     member_of(person(B, _), G),
     member_of(B, AS).
 
-myselect(H, [H|T], T).
-myselect(X, [H|T], [H|R]) :- myselect(X, T, R).
+myselect(X, [X|L], L).
+myselect(X, [X1|L1], [X1|L2]) :- myselect(X, L1, L2).
 
 % Checks if there is a transitive relation between A and C.
 transitive(_, I, I).
-transitive(G, A, B) :- friend(G, A, B).
 transitive(G, A, C) :-
-    myselect(person(A, AS), G, R),
-    member_of(B, AS),
+    myselect(person(A, _), G, R),
+    friend(G, A, B),
     transitive(R, B, C).
 
+% helper rule for wannabe
+is_wannabe(_, [], _).
+is_wannabe(G, [person(Y,_) | R], X) :-
+    transitive(G, X, Y),
+    is_wannabe(G, R, X).
+
 % A wannabe is someone who transitively is friends with everyone.
-wannabe(G, X) :- transitive(G,X,Y), member_of(person(Y,_),G).
+wannabe(G, X) :- is_wannabe(G, G, X).
+
+% helper rule for idol
+is_idol(_, [], _).
+is_idol(G, [person(Y,_) | R], X) :-
+    transitive(G, Y, X),
+    is_idol(G, R, X).
 
 % An idol is a person who is transitively liked by everyone.
-idol([], _).
-idol([person(H, HS) | T],  X) :-
-    transitive([person(H, HS) | T], H, X),
-    idol(T, X).
+idol(G, X) :- is_idol(G, G, X).
 
 % directional relationship
 drel(G, D, A, B) :-
