@@ -60,7 +60,7 @@ io:format("Number of words in all songs: ~p~n", [NoOfWords]).
 io:format("Average number of different words per song: ~p~n", [AvgDiff]).
 io:format("Average number of words per song: ~p~n", [AvgTotal]).
 
-mr:stop(MR).
+% mr:stop(MR).
 
 %% Testing grep.
 % Returns an empty list.
@@ -70,3 +70,19 @@ io:format("MSD Id's for tracks with the word 'VeryLongWordItWontFind.': ~p~n", [
 % Returns a few hits.
 IDs = part2:grep("harri").
 io:format("MSD Id's for tracks with the word 'harri': ~p~n", [IDs]).
+
+%% calculate reverse index
+%{ok, RevIndex} = mr:job(MR,
+%                        fun(Word) ->
+%                            {Word, part2:grep(Word)}
+%                        end,
+%                        fun({Word, Tracks}, Acc) ->
+%                            dict:append(Word, Tracks, Acc)
+%                        end,
+%                        dict:new(),
+%                        Words).
+%
+%LookUp = "onc".
+%io:format("Look-up of '~p': ~p~n", [LookUp,dict:find(LookUp,RevIndex)]).
+
+mr:stop(MR).
