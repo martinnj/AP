@@ -1,6 +1,18 @@
 \subsection{Reducer}
-...
+The reducer is responsible for gathering incoming processed data segments from
+the mapper threads, and turn all of these into one single result. We do so by
+handing the reducer a message (line 115) letting it know it should start
+collecting this data, and within it all of the necessary informations to
+produce such an output; the reduction function, an initial value and the
+number of expected incoming data segments.
 
-\codefig{reducer}{\assignment}{110}{125}{Reducer loop}
+Upon receiving this message, we pass control of the reducer thread to the
+\code{gather\_data\_from\_mappers} function (see figure \ref{code:gatherer}).
+Once all data has been retreived this function call returns allowing the
+reducer to wait for further instructions on line 118.
+
+\codefig{reducer}{\assignment}{109}{125}{Reducer loop}
+
+...
 
 \codefig{gatherer}{\assignment}{127}{136}{Gatherer}
