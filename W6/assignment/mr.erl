@@ -72,7 +72,7 @@ coordinator_loop(Reducer, Mappers) ->
         io:format("starting job~n"),
         send_func(Mappers, MapFun),
         send_data(Mappers, Data),
-        case rpc(Reducer, {job, {RedFun, RedInit, length(Data)}}) of
+        case rpc(Reducer, {gather, {RedFun, RedInit, length(Data)}}) of
             {ok, Result} -> reply_ok(From, Result);
             {error, Reason} -> From ! {error, Reason} % unused
         end,
@@ -112,7 +112,7 @@ reducer_loop() ->
 	    io:format("Reducer ~p stopping~n", [self()]),
 	    ok;
     
-    {From, {job, {Fun, Init, Missing}}} ->
+    {From, {gather, {Fun, Init, Missing}}} ->
         % pass control of thread to gather_data_from_mappers
         reply_ok(From, gather_data_from_mappers(Fun, Init, Missing)),
         reducer_loop();
