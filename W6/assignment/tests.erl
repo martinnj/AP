@@ -2,7 +2,7 @@
 % tests.erl
 %
 
-{ok, MR}   = mr:start(3).
+{ok, MR} = mr:start(3).
 
 % expected: 1+2+3+4+5+6+7+8+9+10 = 55
 {ok, Sum} = mr:job(MR,
@@ -23,13 +23,11 @@ io:format("Fact: ~p~n", [Fact]).
 
 %%% Part 2 tests start here.
 
-{Words, Tracks} = read_mxm:from_file('data/mxm_dataset_test.txt').
-% Words is a list of strings.
-% Tracks is a list of binaries.
-%TRK = hd(Tracks).
-%{V1, V2, V3} = read_mxm:parse_track(TRK).
-%R = part2:t1mapfunc(TRK).
+% Read track data.
+{Words, Tracks} = read_mxm:from_file('data/mxm_dataset_test.txt'). % Little dataset (~27K songs)
+%{Words, Tracks} = read_mxm:from_file('data/mxm_dataset_train.txt'). % Big ass dataset.
 
+% Count the total number of words in all the songs.
 {ok, NoOfWords} = mr:job(MR,
                          fun(Track) ->
                                  {_, _, WL} = read_mxm:parse_track(Track),
@@ -41,15 +39,34 @@ io:format("Fact: ~p~n", [Fact]).
 
 io:format("Number of words in all songs: ~p~n", [NoOfWords]).
 
-
-{ok, {AvgDiff, AvgTotal}} = mr:job(MR,
+% Calculate the average number of different words, and the average number of words in total,
+% per song.
+{ok, {AvgDiff, AvgTotal, _}} = mr:job(MR,
                                    fun(Track) ->
-                                           %lol
+                                       {_, _, WL} = read_mxm:parse_track(Track),
+                                       DiffWords = length(WL),
+                                       Counts = lists:map(fun ({_, C}) -> C end,WL),
+                                       WordCount = part2:lsum(Counts,0),
+                                       {DiffWords, WordCount, 0}
                                    end,
-                                   fun({Diff, Total},{Acc1, Acc2}) ->
-                                           %lol
+                                   fun({Diff, Total, _},{Acc1, Acc2, N}) ->
+                                       %--New average = old average * (n-1)/n + new value /n
+                                       NAv = Acc1 * (N-1)/N + Diff/N,
+                                       NTa = Acc2 * (N-1)/N + Total/N,
+                                       {NAv, NTa, N + 1}
                                    end,
-                                   {0,0},
-                                   Trakcs).
+                                   {0,0,1},
+                                   Tracks).
+io:format("Average number of different words per song: ~p~n", [AvgDiff]).
+io:format("Average number of words per song: ~p~n", [AvgTotal]).
 
 mr:stop(MR).
+
+%% Testing grep.
+% Returns an empty list.
+NoIDs = part2:grep("VeryLongWordItWontFind.").
+io:format("MSD Id's for tracks with the word 'VeryLongWordItWontFind.': ~p~n", [NoIDs]).
+
+% Returns a few hits.
+IDs = part2:grep("harri").
+io:format("MSD Id's for tracks with the word 'harri': ~p~n", [IDs]).
