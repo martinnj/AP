@@ -1,0 +1,25 @@
+\subsection{Coordinator}
+The coordinator is at the heart of the map-reduce framework, as it takes job
+requests (line 71) and prepares the reducer and mappers, and is responsible
+for handing out the data and starting the processing. On line 73 it sends out
+the function used by the mappers to process each data segment, using helper
+the function \code{send\_func} (see appendix \ref{helper:send_func}) we've
+provided. It then sends out the associated job data (line 74), using helper
+the function \code{send\_data} provided by the assignment code skeleton. This
+effectively initializes the running mapper threads.
+
+Since the coordinator is the thread responsible for reporting back to the job
+request with an appropriate response, we decided to prepare the framework for
+some simple error-handling by the \code{case}-statement on lines 75--79, where
+we hand off the job to the reducer, effectively a blocking call as we must
+wait for the reducer to receive and process all of the data --- although we do
+not have any thrown errors anywhere.
+
+\codefig{coordinator}{\assignment}{63}{85}{Coordinator loop}
+
+When the reducer replies, it should match the tuple \code{ok} and the result.
+This case makes the coordinator respond back to the requester, also with a
+tuple \code{ok} followed by the result.
+
+Lastly, line 79 ensures that upon having processed a job, we wait for further
+instructions.
