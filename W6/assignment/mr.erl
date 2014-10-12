@@ -12,6 +12,7 @@
 
 start(N) ->
     {Reducer, Mappers} = init(N),
+    %io:format("Spawning coordinator.~n"),
     {ok, spawn(fun() -> coordinator_loop(Reducer, Mappers) end)}.
 
 
@@ -61,6 +62,7 @@ data_async(Pid, D) -> async(Pid, {data, D}).
 %%% Coordinator
 
 coordinator_loop(Reducer, Mappers) ->
+    %io:format("Cooridnator looooooop: ~p~n", [make_ref()]),
     receive
 	{From, stop} ->
 	    io:format("~p stopping~n", [self()]),
@@ -68,24 +70,24 @@ coordinator_loop(Reducer, Mappers) ->
 	    stop_async(Reducer),
 	    reply_ok(From);
 
-    {From, {job, MapFun, RedFun, RedInit, Data}} ->
-        io:format("starting job~n"),
-        Reducer ! {self(), {gather, {RedFun, RedInit, length(Data)}}},
-        send_func(Mappers, MapFun),
-        send_data(Mappers, Data),
-        receive
-            {Reducer,{ok, Result}} -> reply_ok(From, Result);
-            {Reducer,{error, Reason}} -> From ! {error, Reason} % unused
-        end,
+        {From, {job, MapFun, RedFun, RedInit, Data}} ->
+            io:format("starting job~n"),
+            Reducer ! {self(), {gather, {RedFun, RedInit, length(Data)}}},
+            send_func(Mappers, MapFun),
+            send_data(Mappers, Data),
+            receive
+                {Reducer,{ok, Result}} -> reply_ok(From, Result);
+                {Reducer,{error, Reason}} -> From ! {error, Reason} % unused
+            end,
         %case rpc(Reducer, {gather, {RedFun, RedInit, length(Data)}}) of
         %    {ok, Result} -> reply_ok(From, Result);
         %    {error, Reason} -> From ! {error, Reason} % unused
         %end,
-        coordinator_loop(Reducer, Mappers);
+            coordinator_loop(Reducer, Mappers);
 
 	Unknown ->
-	    io:format("unknown message in ~p: ~p~n",[self(),Unknown]), 
-        coordinator_loop(Reducer, Mappers)
+            io:format("unknown message in ~p: ~p~n",[self(),Unknown]), 
+            coordinator_loop(Reducer, Mappers)
     end.
 
 % sends a function to the mappers
@@ -126,7 +128,6 @@ reducer_loop() ->
     Unknown ->
         io:format("unknown message in ~p: ~p~n",[self(),Unknown]), 
         reducer_loop()
-    
     end.
 
 gather_data_from_mappers(Fun, Acc, Missing) ->
